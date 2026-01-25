@@ -1,0 +1,255 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-0">Visão Geral</h2>
+            <p class="text-muted small mb-0">Monitoramento em Tempo Real (Histórico 24h)</p>
+        </div>
+        <div class="bg-white p-2 rounded shadow-sm border">
+            <small class="text-muted d-block"><i class="bi bi-hdd-network"></i> {{ sys_info.hostname }}</small>
+            <small class="text-success fw-bold"><i class="bi bi-clock"></i> {{ sys_info.uptime }}</small>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm border-start border-primary border-4">
+                <div class="card-body">
+                    <div class="text-muted small text-uppercase fw-bold">Dispositivos</div>
+                    <div class="fs-2 fw-bold text-primary">{{ total_devices }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm border-start border-success border-4">
+                <div class="card-body">
+                    <div class="text-muted small text-uppercase fw-bold">Tráfego Permitido</div>
+                    <div class="fs-2 fw-bold text-success">{{ chart_acoes[0] }}</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm border-start border-danger border-4">
+                <div class="card-body">
+                    <div class="text-muted small text-uppercase fw-bold">Bloqueios</div>
+                    <div class="fs-2 fw-bold text-danger">{{ chart_acoes[1] }}</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white fw-bold py-3">Top Origens</div>
+                <div class="card-body">
+                    <canvas id="chartStacked" height="120"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-header bg-white fw-bold py-3">Fabricantes</div>
+                <div class="card-body">
+                    <canvas id="chartVendor" height="200"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-header bg-white fw-bold py-3 border-bottom">
+            <i class="bi bi-cpu me-2 text-primary"></i> Monitoramento do Servidor (24 Horas)
+        </div>
+        <div class="card-body">
+            
+            <div class="row align-items-center mb-4">
+                <div class="col-md-3 text-center border-end">
+                    <h6 class="text-muted small text-uppercase mb-3">CPU (Processador)</h6>
+                    <div style="position: relative; height: 100px; width: 100px; margin: 0 auto;">
+                        <canvas id="cpuGauge"></canvas>
+                        <div style="position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-weight: bold; font-size: 1.2rem;" id="cpu-text">0%</div>
+                    </div>
+                </div>
+                <div class="col-md-3 border-end p-3">
+                    <h6 class="text-muted small text-uppercase mb-2">Memória RAM</h6>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span id="mem-val" class="fw-bold">0 GB</span>
+                        <span class="text-muted small">Usado</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div id="mem-bar" class="progress-bar bg-primary" role="progressbar" style="width: 0%"></div>
+                    </div>
+                    <small class="text-muted mt-2 d-block text-end" id="mem-percent-text">0%</small>
+                </div>
+                <div class="col-md-3 border-end p-3">
+                    <h6 class="text-muted small text-uppercase mb-2">Disco (HD)</h6>
+                    <div class="d-flex justify-content-between mb-1">
+                        <span id="disk-val" class="fw-bold">0%</span>
+                        <span class="text-muted small">Ocupado</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div id="disk-bar" class="progress-bar bg-warning" role="progressbar" style="width: 0%"></div>
+                    </div>
+                    <small class="text-success mt-2 d-block text-end" id="disk-free-text">0 GB Livres</small>
+                </div>
+                <div class="col-md-3 ps-4">
+                    <h6 class="text-muted small text-uppercase mb-3">Rede (Velocidade)</h6>
+                    <div class="mb-3">
+                        <small class="text-muted">Upload</small>
+                        <div class="d-flex align-items-center"><i class="bi bi-arrow-up-circle-fill text-warning fs-5 me-2"></i><span class="fw-bold fs-5" id="net-sent">0 KB/s</span></div>
+                    </div>
+                    <div>
+                        <small class="text-muted">Download</small>
+                        <div class="d-flex align-items-center"><i class="bi bi-arrow-down-circle-fill text-primary fs-5 me-2"></i><span class="fw-bold fs-5" id="net-recv">0 KB/s</span></div>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="text-muted opacity-25">
+
+            <div class="row mb-4">
+                <div class="col-12">
+                    <h6 class="text-muted small text-uppercase mb-3">Histórico de Rede (Últimas 24h)</h6>
+                    <div style="height: 250px; width: 100%;">
+                        <canvas id="chartNetwork"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <hr class="text-muted opacity-25">
+
+            <div class="row">
+                <div class="col-12">
+                    <h6 class="text-muted small text-uppercase mb-3">
+                        <i class="bi bi-terminal text-secondary me-2"></i> Últimos Eventos do Sistema (SSH, Cron, Erros)
+                    </h6>
+                    <div class="table-responsive">
+                        <table class="table table-sm table-striped table-hover small">
+                            <thead class="table-light">
+                                <tr>
+                                    <th style="width: 150px;">Hora</th>
+                                    <th style="width: 150px;">Processo</th>
+                                    <th>Mensagem</th>
+                                </tr>
+                            </thead>
+                            <tbody id="system-logs-body">
+                                <tr><td colspan="3" class="text-center text-muted">Aguardando dados...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    Chart.defaults.font.family = "'Segoe UI', sans-serif";
+
+    // --- GRÁFICOS DE LOGS ---
+    new Chart(document.getElementById('chartStacked'), {
+        type: 'bar',
+        data: {
+            labels: {{ chart_stacked.labels | tojson }},
+            datasets: [
+                { label: 'Permitido', data: {{ chart_stacked.permitido | tojson }}, backgroundColor: '#198754' },
+                { label: 'Bloqueado', data: {{ chart_stacked.bloqueado | tojson }}, backgroundColor: '#dc3545' }
+            ]
+        },
+        options: { scales: { x: { stacked: true }, y: { stacked: true } }, maintainAspectRatio: false }
+    });
+
+    new Chart(document.getElementById('chartVendor'), {
+        type: 'polarArea',
+        data: {
+            labels: {{ chart_vendor.labels | tojson }},
+            datasets: [{ 
+                data: {{ chart_vendor.data | tojson }},
+                backgroundColor: ['rgba(54, 162, 235, 0.6)', 'rgba(255, 99, 132, 0.6)', 'rgba(255, 206, 86, 0.6)', 'rgba(75, 192, 192, 0.6)', 'rgba(153, 102, 255, 0.6)'],
+                borderWidth: 1
+            }]
+        },
+        options: { maintainAspectRatio: false, plugins: { legend: { position: 'right' } }, scales: { r: { ticks: { display: false } } } }
+    });
+
+    // --- MONITORAMENTO SERVIDOR ---
+    const cpuChart = new Chart(document.getElementById('cpuGauge'), {
+        type: 'doughnut',
+        data: { labels: ['Uso', 'Livre'], datasets: [{ data: [0, 100], backgroundColor: ['#0d6efd', '#e9ecef'], borderWidth: 0, cutout: '75%' }] },
+        options: { plugins: { legend: { display: false }, tooltip: { enabled: false } }, maintainAspectRatio: false }
+    });
+
+    const chartNet = new Chart(document.getElementById('chartNetwork'), {
+        type: 'line',
+        data: {
+            labels: {{ initial_history.labels | tojson }},
+            datasets: [
+                { label: 'Upload (KB/s)', data: {{ initial_history.net_sent | tojson }}, borderColor: '#ffc107', borderWidth: 1, fill: false, pointRadius: 0 },
+                { label: 'Download (KB/s)', data: {{ initial_history.net_recv | tojson }}, borderColor: '#0d6efd', borderWidth: 1, fill: true, backgroundColor: 'rgba(13, 110, 253, 0.1)', pointRadius: 0 }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: false,
+            interaction: { intersect: false, mode: 'index' },
+            scales: { y: { beginAtZero: true }, x: { ticks: { maxTicksLimit: 24, maxRotation: 0 } } }
+        }
+    });
+
+    // LOOP DE ATUALIZAÇÃO (2s)
+    setInterval(() => {
+        fetch('/api/stats')
+            .then(r => r.json())
+            .then(data => {
+                // Atualiza Hardware
+                document.getElementById('cpu-text').innerText = Math.round(data.cpu) + '%';
+                cpuChart.data.datasets[0].data = [data.cpu, 100 - data.cpu];
+                cpuChart.data.datasets[0].backgroundColor[0] = data.cpu > 80 ? '#dc3545' : '#0d6efd';
+                cpuChart.update();
+
+                document.getElementById('mem-val').innerText = data.mem_used + ' GB';
+                document.getElementById('mem-bar').style.width = data.mem_percent + '%';
+                document.getElementById('mem-percent-text').innerText = data.mem_percent + '%';
+
+                document.getElementById('disk-val').innerText = data.disk_percent + '%';
+                document.getElementById('disk-bar').style.width = data.disk_percent + '%';
+                document.getElementById('disk-free-text').innerText = data.disk_free + ' GB Livres';
+
+                document.getElementById('net-sent').innerText = data.net_sent.toFixed(1) + ' KB/s';
+                document.getElementById('net-recv').innerText = data.net_recv.toFixed(1) + ' KB/s';
+
+                // Atualiza Gráfico 24H
+                if(data.history_sent && data.history_sent.length > 0) {
+                    chartNet.data.labels = data.history_labels;
+                    chartNet.data.datasets[0].data = data.history_sent;
+                    chartNet.data.datasets[1].data = data.history_recv;
+                    chartNet.update();
+                }
+
+                // ATUALIZA TABELA DE LOGS DO SISTEMA
+                const tbody = document.getElementById('system-logs-body');
+                if (data.system_logs && data.system_logs.length > 0) {
+                    let html = '';
+                    data.system_logs.forEach(log => {
+                        html += `<tr>
+                            <td class="text-nowrap text-muted">${log.hora}</td>
+                            <td class="fw-bold text-primary">${log.processo}</td>
+                            <td class="text-break">${log.msg}</td>
+                        </tr>`;
+                    });
+                    tbody.innerHTML = html;
+                } else {
+                    // Se não tiver logs ou array vazio
+                    if(tbody.innerHTML.includes('Aguardando')) {
+                         tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">Nenhum evento recente encontrado.</td></tr>';
+                    }
+                }
+            });
+    }, 2000);
+</script>
+{% endblock %}

@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="fw-bold mb-4">Mapeamento de Destinos</h2>
+
+    <div class="row">
+        <div class="col-md-8 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-0">
+                    <table class="table table-hover mb-0">
+                        <thead class="table-light">
+                            <tr>
+                                <th>Nome do Servidor/Site</th>
+                                <th>IP de Destino</th>
+                                <th class="text-end">Ação</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for nome_grupo, ips in grouped_destinos.items() %}
+                                {% for ip in ips %}
+                                <tr>
+                                    <td class="fw-bold text-primary">{{ nome_grupo }}</td>
+                                    <td class="font-monospace text-muted">{{ ip }}</td>
+                                    <td class="text-end">
+                                        <form method="post" class="d-inline">
+                                            <input type="hidden" name="action" value="delete">
+                                            <input type="hidden" name="del_ip" value="{{ ip }}">
+                                            <button class="btn btn-sm btn-outline-danger border-0"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white fw-bold">Mapear Novo IP</div>
+                <div class="card-body">
+                    <form method="post">
+                        <input type="hidden" name="action" value="add">
+                        <div class="mb-3">
+                            <label class="form-label">IP do Destino</label>
+                            <input type="text" name="server_ip" class="form-control font-monospace" placeholder="Ex: 200.147.67.1" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Nome do Serviço</label>
+                            <input type="text" name="server_name" class="form-control" placeholder="Ex: Servidor TOTVS" required>
+                        </div>
+                        <button class="btn btn-primary w-100"><i class="bi bi-geo-alt"></i> Mapear</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

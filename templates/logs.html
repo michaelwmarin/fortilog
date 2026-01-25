@@ -1,0 +1,128 @@
+cat > /opt/fortilog/templates/logs.html << 'EOF'
+{% extends "base.html" %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h4 class="mb-0 fw-bold"><i class="bi bi-list-ul text-primary"></i> Logs em Tempo Real</h4>
+    <a href="{{ url_for('export_logs', **request.args) }}" class="btn btn-success btn-sm">
+        <i class="bi bi-file-earmark-excel"></i> Exportar CSV
+    </a>
+</div>
+
+<div class="card mb-4 border-0 shadow-sm">
+    <div class="card-body py-3">
+        <form method="get" class="row g-2 align-items-center">
+            <div class="col-md-3">
+                <input type="text" name="busca" class="form-control" placeholder="Buscar IP, Nome, MAC ou Site..." value="{{ request.args.get('busca', '') }}">
+            </div>
+            <div class="col-md-2">
+                <input type="date" name="data_inicio" class="form-control" value="{{ request.args.get('data_inicio', '') }}" title="Data Início">
+            </div>
+            <div class="col-md-3">
+                <div class="d-flex gap-2">
+                    <div class="form-check pt-2">
+                        <input class="form-check-input" type="checkbox" name="status" value="permitido" id="chkPerm" {% if 'permitido' in request.args.getlist('status') %}checked{% endif %}>
+                        <label class="form-check-label text-success fw-bold" for="chkPerm">Permitidos</label>
+                    </div>
+                    <div class="form-check pt-2">
+                        <input class="form-check-input" type="checkbox" name="status" value="bloqueado" id="chkBlock" {% if 'bloqueado' in request.args.getlist('status') %}checked{% endif %}>
+                        <label class="form-check-label text-danger fw-bold" for="chkBlock">Bloqueados</label>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100"><i class="bi bi-search"></i> Filtrar</button>
+            </div>
+            <div class="col-md-2">
+                <a href="{{ url_for('logs_view') }}" class="btn btn-outline-secondary w-100">Limpar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm overflow-hidden">
+    <div class="table-responsive">
+        <table class="table table-hover align-middle mb-0" style="font-size: 0.9rem;">
+            <thead class="bg-light text-secondary">
+                <tr>
+                    <th style="width: 140px;">Hora</th>
+                    <th style="width: 220px;">Origem (Nome / IP / MAC)</th> <th>Dispositivo</th>
+                    <th>Destino (Site/Serviço)</th>
+                    <th>Aplicação</th>
+                    <th class="text-center">Ação</th>
+                    <th>Política</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for l in logs %}
+                <tr>
+                    <td class="text-muted" style="font-family: monospace;">{{ l.hora }}</td>
+                    
+                    <td>
+                        <div class="d-flex flex-column" style="line-height: 1.3;">
+                            <span class="fw-bold text-dark">{{ l.src_nome }}</span>
+                            <span class="text-primary" style="font-size: 0.85rem;">{{ l.ip }}</span>
+                            {% if l.mac != '-' %}
+                                <span class="text-muted" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                                    <i class="bi bi-cpu"></i> {{ l.mac }}
+                                </span>
+                            {% endif %}
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <i class="bi {{ l.icon_cls }} fs-5 text-secondary"></i>
+                            <div style="line-height: 1.1;">
+                                <span class="d-block fw-bold">{{ l.vendor }}</span>
+                                <small class="text-muted">{{ l.os_nome }}</small>
+                            </div>
+                        </div>
+                    </td>
+
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            {% if l.pais_iso != 'xx' %}
+                                <img src="https://flagcdn.com/16x12/{{ l.pais_iso }}.png" width="16" height="12" alt="{{ l.pais_nome }}">
+                            {% else %}
+                                <i class="bi bi-globe2 text-muted"></i>
+                            {% endif %}
+                            <span class="text-truncate d-inline-block" style="max-width: 250px;" title="{{ l.destino }}">
+                                {{ l.destino }}
+                            </span>
+                        </div>
+                    </td>
+
+                    <td><span class="badge bg-light text-dark border">{{ l.servico }}</span></td>
+
+                    <td class="text-center">
+                        {% if l.status_cat == 'Permitido' %}
+                            <i class="bi bi-check-circle-fill text-success fs-5" title="Permitido"></i>
+                        {% else %}
+                            <i class="bi bi-x-circle-fill text-danger fs-5" title="Bloqueado"></i>
+                        {% endif %}
+                    </td>
+
+                    <td><small class="text-muted">{{ l.politica_id }}</small></td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="7" class="text-center py-5 text-muted">
+                        <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                        Nenhum log encontrado para este filtro.
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    
+    <div class="card-footer bg-white border-top py-3">
+        <div class="d-flex justify-content-between align-items-center">
+            <small class="text-muted">Exibindo os últimos <b>{{ count }}</b> registros (Limite: {{ limit }})</small>
+            <small class="text-muted">Processado em: {{ sys_info.uptime }}</small>
+        </div>
+    </div>
+</div>
+{% endblock %}
+EOF

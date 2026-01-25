@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - FortiLog</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f4f6f9;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .card-login {
+            width: 100%;
+            max-width: 400px;
+            border: none;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .brand-logo {
+            font-size: 2rem;
+            color: #0d6efd;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+        }
+        .btn-eye {
+            cursor: pointer;
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="card card-login p-4">
+        <div class="card-body">
+            <div class="brand-logo">
+                <i class="bi bi-shield-lock-fill"></i> FortiLog
+            </div>
+            <h5 class="text-center text-muted mb-4">Acesso ao Sistema</h5>
+
+            {% if erro %}
+            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                <i class="bi bi-exclamation-triangle-fill flex-shrink-0 me-2"></i>
+                <div>{{ erro }}</div>
+            </div>
+            {% endif %}
+
+            <form method="post">
+                <div class="mb-3">
+                    <label class="form-label">Usuário</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-person"></i></span>
+                        <input type="text" name="username" class="form-control" placeholder="Seu usuário" required autofocus>
+                    </div>
+                </div>
+                <div class="mb-2">
+                    <label class="form-label">Senha</label>
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="bi bi-key"></i></span>
+                        <input type="password" name="password" id="loginPass" class="form-control" placeholder="Sua senha" required>
+                        <button type="button" class="btn btn-outline-secondary btn-eye" onclick="toggleLoginPass()">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="text-end mb-3">
+                    <a href="#" class="text-decoration-none small" data-bs-toggle="modal" data-bs-target="#modalForgot">Esqueci a senha</a>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2 fw-bold">Entrar</button>
+            </form>
+        </div>
+        <div class="card-footer bg-white text-center border-0 pt-0 pb-3">
+            <small class="text-muted">Enterprise Edition</small>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalForgot" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold"><i class="bi bi-unlock"></i> Recuperar Acesso</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <p class="text-muted small">Informe seu <b>Login</b> ou <b>E-mail</b>. O Administrador receberá um alerta imediato para resetar sua senha.</p>
+                    
+                    <div id="alertArea"></div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Login ou E-mail</label>
+                        <input type="text" id="resetInput" class="form-control" placeholder="Digite aqui...">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary" onclick="solicitarReset()">Solicitar Reset</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleLoginPass() {
+            const field = document.getElementById('loginPass');
+            const icon = document.querySelector('.btn-eye i');
+            if (field.type === "password") {
+                field.type = "text";
+                icon.classList.remove('bi-eye');
+                icon.classList.add('bi-eye-slash');
+            } else {
+                field.type = "password";
+                icon.classList.remove('bi-eye-slash');
+                icon.classList.add('bi-eye');
+            }
+        }
+
+        function solicitarReset() {
+            const val = document.getElementById('resetInput').value;
+            const alertArea = document.getElementById('alertArea');
+            
+            if(!val) {
+                alertArea.innerHTML = '<div class="alert alert-warning">Digite seu usuário ou e-mail!</div>';
+                return;
+            }
+
+            // Envia para o Backend
+            fetch('/recuperar_senha', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+                body: 'user_input=' + encodeURIComponent(val)
+            })
+            .then(response => response.json())
+            .then(data => {
+                if(data.status === 'ok') {
+                    alertArea.innerHTML = '<div class="alert alert-success">' + data.msg + '</div>';
+                    document.getElementById('resetInput').value = '';
+                } else {
+                    alertArea.innerHTML = '<div class="alert alert-danger">' + data.msg + '</div>';
+                }
+            })
+            .catch(err => {
+                alertArea.innerHTML = '<div class="alert alert-danger">Erro de conexão.</div>';
+            });
+        }
+    </script>
+</body>
+</html>
