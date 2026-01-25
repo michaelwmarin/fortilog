@@ -27,13 +27,13 @@ Analisar arquivos de logs de rede com milhões de linhas diretamente no Excel é
    git clone [https://github.com/michaelwmarin/fortilog.git](https://github.com/michaelwmarin/fortilog.git)
    cd fortilog
 
-```
+   ```
 
 2. **Instale as dependências:**
-```bash
-pip install -r requirements.txt
+   ```bash
+   pip install -r requirements.txt
 
-```
+   ```
 
 
 3. **Configure seus dados:**
@@ -42,10 +42,10 @@ pip install -r requirements.txt
 
 
 4. **Inicie o Dashboard:**
-```bash
-python app.py
+   ```bash
+   python app.py
 
-```
+   ```
 
 
 Acesse em: `http://localhost:5000`
