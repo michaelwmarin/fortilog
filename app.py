@@ -7,17 +7,16 @@ import time
 import threading
 import csv
 import io
-import logging
-import ipaddress
 import socket
 import urllib.request
 import urllib.parse
-import glob
 from datetime import datetime
 from dotenv import load_dotenv
-load_dotenv()
 from collections import Counter, deque
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify, make_response
+
+# Carrega configurações do arquivo .env
+load_dotenv()
 
 # ==============================================================================
 # CONFIGURAÇÃO GERAL
@@ -29,20 +28,24 @@ LOGS_DIR = os.path.join(BASE_DIR, 'logs')
 os.makedirs(DATA_DIR, exist_ok=True)
 os.makedirs(LOGS_DIR, exist_ok=True)
 
+# Define arquivo de log (Do .env ou padrão)
+LOG_FILE_PATH = os.getenv("LOG_PATH", "/var/log/syslog")
+
 app = Flask(__name__)
-app.secret_key = 'v118_smart_memory_final'
+app.secret_key = os.getenv("FLASK_KEY", "v118_smart_memory_final")
 
 # ==============================================================================
-# ARQUIVOS
+# ARQUIVOS DE DADOS (Conectado ao .env)
 # ==============================================================================
-USERS_FILE = os.path.join(DATA_DIR, 'users.json')
-SERVERS_FILE = os.path.join(DATA_DIR, 'servers.json')
-MACS_FILE = os.path.join(DATA_DIR, 'macs.json')
-GROUPS_FILE = os.path.join(DATA_DIR, 'groups.json')
-NETS_FILE = os.path.join(DATA_DIR, 'networks.json')
-ALERTS_CONFIG_FILE = os.path.join(DATA_DIR, 'alerts_config.json')
-ALERTS_LOG_FILE = os.path.join(DATA_DIR, 'alerts_log.json')
+USERS_FILE         = os.path.join(DATA_DIR, os.getenv('FILE_USERS', 'users.json'))
+SERVERS_FILE       = os.path.join(DATA_DIR, os.getenv('FILE_SERVERS', 'servers.json'))
+MACS_FILE          = os.path.join(DATA_DIR, os.getenv('FILE_MACS', 'macs.json'))
+GROUPS_FILE        = os.path.join(DATA_DIR, os.getenv('FILE_GROUPS', 'groups.json'))
+NETS_FILE          = os.path.join(DATA_DIR, os.getenv('FILE_NETWORKS', 'networks.json'))
+ALERTS_CONFIG_FILE = os.path.join(DATA_DIR, os.getenv('FILE_ALERTS_CONFIG', 'alerts_config.json'))
+ALERTS_LOG_FILE    = os.path.join(DATA_DIR, os.getenv('FILE_ALERTS_LOG', 'alerts_log.json'))
 
+# Telegram
 TG_TOKEN = os.getenv("TG_TOKEN")
 TG_CHAT_ID_DEFAULT = os.getenv("TG_CHAT_ID")
 
@@ -59,9 +62,9 @@ USER_GROUPS_LIST = [
     "Usuario", "Jovem Aprendiz", "WHATSAPP LIBERADO", "SUPORTE", "FINANCEIRO", "USUARIO_EX"
 ]
 
-# --- MEMÓRIA INTELIGENTE ---
+# --- MEMÓRIA ---
 DNS_CACHE = {}
-KNOWN_HOSTS_CACHE = {} # Cache para lembrar nomes dos IPs
+KNOWN_HOSTS_CACHE = {} 
 ALERT_CACHE = deque(maxlen=50)
 LAST_CPU_ALERT = 0
 
@@ -88,11 +91,12 @@ def load_json(fp, df=None):
 def get_sys():
     try: up = subprocess.getoutput("uptime -p").replace("up ", "")
     except: up = "-"
-    try: hn = subprocess.getoutput("hostname")
+    try: hn = socket.gethostname()
     except: hn = "FortiLog"
     return {'hostname': hn, 'uptime': up}
 
 def send_telegram_msg(msg):
+    if not TG_TOKEN or not TG_CHAT_ID_DEFAULT: return
     try:
         url = f"https://api.telegram.org/bot{TG_TOKEN}/sendMessage"
         data = urllib.parse.urlencode({"chat_id": TG_CHAT_ID_DEFAULT, "text": msg}).encode()
@@ -134,27 +138,22 @@ def resolve_hostname(ip):
 def identificar_nome(d, line, macs_db, nets_db, raw_os, raw_srcname):
     ip_clean = d['ip'].strip()
     
-    # 1. MAC Address
     if d['mac'] != "-":
         nome = macs_db.get(d['mac'].lower().strip())
         if nome: return nome
         
-    # 2. Infraestrutura
     if ip_clean == "192.168.32.2": return "FortiGate"
     if ip_clean.startswith("192.168.240."): return "CÂMERAS INTELBRAS"
     
-    # 3. Log e Memória
     user_match = re.search(r'user="([^"]+)"', line)
     unauth_match = re.search(r'unauthuser="([^"]+)"', line)
     usuario = user_match.group(1) if user_match else (unauth_match.group(1) if unauth_match else None)
     
     maquina = None
-    # Se tem nome no log, usa e memoriza
-    if raw_srcname and raw_srcname != "-" and raw_srcname != "Unknown":
+    if raw_srcname and raw_srcname not in ["-", "Unknown"]:
         maquina = raw_srcname
         KNOWN_HOSTS_CACHE[ip_clean] = maquina
     
-    # Se não tem no log, busca na memória
     if not maquina and ip_clean in KNOWN_HOSTS_CACHE:
         maquina = KNOWN_HOSTS_CACHE[ip_clean]
 
@@ -162,7 +161,6 @@ def identificar_nome(d, line, macs_db, nets_db, raw_os, raw_srcname):
     if usuario: return usuario
     if maquina: return maquina
     
-    # 4. Fallback
     if ip_clean.startswith("192.168.") or ip_clean.startswith("172."):
         dns_name = resolve_hostname(ip_clean)
         if dns_name: return dns_name
@@ -219,7 +217,7 @@ def parse_line(line, srv, macs, groups, nets):
         return d
     except: return None
 
-# --- BUSCA EM MÚLTIPLOS ARQUIVOS + ROTAÇÃO ---
+# --- BUSCA DE LOGS ---
 def get_logs_data(limit=1000, dt_ini=None, dt_fim=None, busca_filtro=None, ler_tudo=False):
     logs = []
     srv = load_json(SERVERS_FILE); macs = load_json(MACS_FILE)
@@ -227,17 +225,15 @@ def get_logs_data(limit=1000, dt_ini=None, dt_fim=None, busca_filtro=None, ler_t
     user_group = session.get('group_access', 'TODOS')
     allowed_ips = [k for k, v in groups.items() if v == user_group] if user_group != 'TODOS' else []
     
-    target_files = "/var/log/syslog /var/log/syslog.1"
-    
     try:
         cmd = ""
         if busca_filtro and len(busca_filtro) > 1:
-            cmd = f"grep -a -h -i '{busca_filtro}' {target_files}"
+            cmd = f"grep -a -h -i '{busca_filtro}' {LOG_FILE_PATH}"
         elif dt_ini:
-            cmd = f"grep -a -h 'date={dt_ini}' {target_files}"
+            cmd = f"grep -a -h 'date={dt_ini}' {LOG_FILE_PATH}"
         else:
             lines_to_read = 100000 if ler_tudo else 50000
-            cmd = f"tail -n {lines_to_read} /var/log/syslog"
+            cmd = f"tail -n {lines_to_read} {LOG_FILE_PATH}"
 
         process = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, errors='ignore')
         out, _ = process.communicate(timeout=90)
@@ -323,7 +319,8 @@ def check_alerts(cpu):
     except: pass
 
 def data_collector():
-    global LAST_NET, CURRENT_STATS
+    # CORREÇÃO F824: LAST_NET removido do global
+    global CURRENT_STATS
     last_history_update = 0
     while True:
         try:
@@ -331,15 +328,19 @@ def data_collector():
             mem = psutil.virtual_memory()
             io_net = psutil.net_io_counters()
             du = psutil.disk_usage('/')
+            
             s_inst = max(0, io_net.bytes_sent - LAST_NET['sent']) / 1024
             r_inst = max(0, io_net.bytes_recv - LAST_NET['recv']) / 1024
+            
             LAST_NET['sent'] = io_net.bytes_sent
             LAST_NET['recv'] = io_net.bytes_recv
+            
             CURRENT_STATS = {
                 'cpu': cpu, 'mem_used': round(mem.used/(1024**3), 2), 'mem_percent': mem.percent,
                 'net_sent': s_inst, 'net_recv': r_inst, 'disk_percent': du.percent, 'disk_free': round(du.free/(1024**3), 1)
             }
             check_alerts(cpu)
+            
             if time.time() - last_history_update > 60:
                 now_str = datetime.now().strftime("%H:%M")
                 HISTORY['cpu'].pop(0); HISTORY['cpu'].append(cpu)
@@ -355,7 +356,7 @@ t_data = threading.Thread(target=data_collector, daemon=True)
 t_data.start()
 
 # ==============================================================================
-# ROTAS
+# ROTAS FLASK
 # ==============================================================================
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -384,7 +385,7 @@ def logout(): session.clear(); return redirect(url_for('login'))
 def dashboard():
     if not session.get('logado'): return redirect(url_for('login'))
     try:
-        logs = get_logs_data(limit=1000)
+        logs = get_logs_data(limit=100)
         devices_unique = {}
         logs_graficos = []
         for l in logs:
@@ -512,4 +513,5 @@ def api_stats():
     return jsonify(data)
 
 if __name__ == '__main__':
+    # Permite acesso externo (útil para acessar o WSL pelo Windows)
     app.run(host='0.0.0.0', port=5000, debug=True)
