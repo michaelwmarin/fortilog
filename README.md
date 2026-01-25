@@ -77,9 +77,5 @@ O **FortiLog** é uma solução de monitoramento em tempo real projetada para pr
 5.  **Acesse:**
     Abra o navegador em `http://127.0.0.1:5000`
 
-## 📸 Screenshots
-
-*(Adicione prints do seu dashboard aqui depois)*
-
 ---
 Desenvolvido por **Michael Marin**
