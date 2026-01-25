@@ -1,0 +1,19 @@
+# Ignorar arquivos de dados reais (Privacidade)
+data/*.json
+!data/servers_sample.json
+!data/macs_sample.json
+!data/servers_file_sample.json
+!data/policies_sample.json
+!data/users_sample.json
+
+# Ignorar logs e arquivos gigantes
+*.csv
+*.log
+*.gz
+*.zip
+
+# Python e Sistema
+__pycache__/
+venv/
+.env
+.vscode/

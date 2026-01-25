@@ -1,0 +1,10 @@
+{
+    "teste": {
+        "senha": "Teste@123",
+        "role": "ADM",
+        "telegram": "",
+        "nome": "TESTE",
+        "email": "TESTE@TESTE.COM.BR",
+        "group_access": "TODOS"
+    }
+}

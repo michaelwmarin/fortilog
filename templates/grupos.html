@@ -1,0 +1,129 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="fw-bold mb-4">Gestão de Grupos e Serviços</h2>
+
+    <div class="row">
+        <div class="col-md-8">
+            
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-primary text-white fw-bold">
+                    <i class="bi bi-people-fill"></i> Grupos de Usuários (Setores)
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Grupo</th>
+                                    <th>Membros (IP ou User)</th>
+                                    <th class="text-end">Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if user_groups %}
+                                    {% for grupo, membros in user_groups.items() %}
+                                        <tr class="table-secondary"><td colspan="3" class="fw-bold small text-uppercase text-primary">{{ grupo }}</td></tr>
+                                        {% for m in membros %}
+                                        <tr>
+                                            <td class="ps-4 text-muted border-start border-3 border-primary">{{ grupo }}</td>
+                                            <td class="font-monospace">{{ m }}</td>
+                                            <td class="text-end">
+                                                <form method="post" class="d-inline" onsubmit="return confirm('Remover este membro do grupo?');">
+                                                    <input type="hidden" name="action" value="delete">
+                                                    <input type="hidden" name="del_membro" value="{{ m }}">
+                                                    <button class="btn btn-sm btn-outline-danger border-0"><i class="bi bi-trash"></i></button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% endfor %}
+                                {% else %}
+                                    <tr><td colspan="3" class="text-center text-muted p-3">Nenhum grupo de usuário configurado.</td></tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card border-0 shadow-sm mb-4">
+                <div class="card-header bg-secondary text-white fw-bold">
+                    <i class="bi bi-hdd-rack-fill"></i> Outros Serviços (Infraestrutura)
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Serviço</th>
+                                    <th>Destino (IP/Host)</th>
+                                    <th class="text-end">Ação</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% if service_groups %}
+                                    {% for grupo, membros in service_groups.items() %}
+                                        <tr class="table-light"><td colspan="3" class="fw-bold small text-uppercase text-secondary">{{ grupo }}</td></tr>
+                                        {% for m in membros %}
+                                        <tr>
+                                            <td class="ps-4 text-muted border-start border-3 border-secondary">{{ grupo }}</td>
+                                            <td class="font-monospace">{{ m }}</td>
+                                            <td class="text-end">
+                                                <form method="post" class="d-inline" onsubmit="return confirm('Remover este item?');">
+                                                    <input type="hidden" name="action" value="delete">
+                                                    <input type="hidden" name="del_membro" value="{{ m }}">
+                                                    <button class="btn btn-sm btn-outline-danger border-0"><i class="bi bi-trash"></i></button>
+                                                </form>
+                                            </td>
+                                        </tr>
+                                        {% endfor %}
+                                    {% endfor %}
+                                {% else %}
+                                    <tr><td colspan="3" class="text-center text-muted p-3">Nenhum serviço configurado.</td></tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-header bg-dark text-white fw-bold">Novo Agrupamento</div>
+                <div class="card-body">
+                    <form method="post">
+                        <input type="hidden" name="action" value="add">
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">IP, Usuário ou Host</label>
+                            <input type="text" name="membro" class="form-control font-monospace" placeholder="Ex: 192.168.10.50 ou joao.silva" required>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Nome do Grupo / Serviço</label>
+                            <input type="text" name="grupo" class="form-control" list="existingGroups" placeholder="Digite ou selecione..." required>
+                            <datalist id="existingGroups">
+                                <option value="Usuario">
+                                <option value="Jovem Aprendiz">
+                                <option value="WHATSAPP LIBERADO">
+                                <option value="SUPORTE">
+                                <option value="FINANCEIRO">
+                                <option value="USUARIO_EX">
+                            </datalist>
+                            <div class="form-text small text-muted">
+                                Se usar um nome da lista padrão, cairá na tabela azul. Caso contrário, irá para a tabela cinza (Serviços).
+                            </div>
+                        </div>
+
+                        <button class="btn btn-success w-100"><i class="bi bi-plus-lg"></i> Adicionar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,52 @@
+config firewall addrgrp
+    edit "G Suite"
+        set uuid 38fa01b2-03f1-51f0-461d-460a16fa4e6a
+        set member "gmail.com" "wildcard.google.com"
+    next
+    edit "Microsoft Office 365"
+        set uuid 38fa6206-03f1-51f0-d0a2-770c33e959f9
+        set member "login.microsoftonline.com" "login.microsoft.com" "login.windows.net" "OneDrive"
+    next
+    edit "USUARIO_EX"
+        set uuid 57613cee-042b-51f0-10f6-988f9526e80b
+        set member "Equipamentos da Base" "Filipe" "Lenilso Felipe" "PROJETO-FortiLog" "Israel" "Victor" "Leandro Financeiro" "Café" "Narciso" "Fernando" "Cirilo" "Impressora" "Câmera-Intelbras" "RH" "Will" "Jorge" "Fortigate" "Diego" "Pollyanna" "Ivane" "Renato" "Deco" "Cau" "Marcelo" "Fernando Financeiro" "Rony" "Visitante" "Wesley LINK" "RH-Gezebel Santos" "Patricia" "Pedro comecial" "Aparelhos Pesquisa Satisfação" "PC-TESTE" "Gerador" "Nathan" "Nicolas"
+        set color 16
+    next
+    edit "FortiLog-REDE"
+        set uuid 1f70a09a-1ace-51f0-92cc-cb253b1e21be
+        set member "168.197.25.0/24" "168.197.26.0/24" "192.168.240.0/24" "192.168.25.0/24" "200.106.193.0/25" "200.106.193.128/25" "200.106.195.0/25" "200.106.195.128/25" "172.18.255.0/24" "172.31.255.0/24" "192.168.32.0/23" "CGNA 1" "CGNA 2" "CGNA 3" "CGNA 4" "CGNA 5"
+    next
+    edit "SERVIÇOS"
+        set uuid 77d655f6-1f77-51f0-0934-db4c4fedbe35
+        set member "172.18.255.0/24" "172.31.255.0/24" "192.168.240.0/24" "192.168.25.0/24"
+        set color 19
+    next
+    edit "Sites"
+        set uuid dcd1708c-1acf-51f0-5e0e-b61fcc3cc3c5
+        set member "Pontomais" "Serasa experian" "SITE-FortiLog" "Deezer" "portaldoassinante" "comologar.com.br" "Bing" "agiltelecom.com.br" "oltcloud" "OneDrive" "Discord" "auth.max.com" "HBO MAX" "receita.fazenda" "FortiLog-REDE" "SERVIÇOS" "directregistration.fortinet.com" "login.microsoft.com" "login.microsoftonline.com" "login.windows.net" "service.fortiguard.net" "update.fortiguard.net" "wildcard.google.com" "G Suite" "Microsoft Office 365" "gmail.com" "wildcard.dropbox.com"
+    next
+    edit "Sites Bloqueado"
+        set uuid 0bfef68e-1ad2-51f0-8749-af6eb9c14f08
+        set member "You-Tube" "Netflix" "Instagram" "Cartola" "Ge.globo"
+    next
+    edit "WHATSAPP LIBERADO"
+        set uuid 96bc9766-1fbb-51f0-4f6e-30ba667c4811
+        set member "Aline Perreira" "Emely" "Ivan" "Greciel" "Bianca" "Mirelle" "VENDAS_EXT" "Debora Moura" "Amanda" "Pedro comecial" "Kley" "Dinatto" "Henzom" "Roberto-comercial" "Wendel" "Moura" "Breno" "Elber" "Gabriel" "Luis Augusto" "Pedro Doria" "Victhor" "Robsom" "ALIF Leandro" "Notebook-TESTE" "200.106.193.128/25"
+        set color 16
+    next
+    edit "SUPORTE"
+        set uuid a5e47adc-5031-51f0-0db2-6150d0341946
+        set member "Bruna" "Dinatto" "Jorge" "Henzom" "Pedro Lucca" "Putti" "Ray" "Vitor Rosa" "Wesley" "Nicolas" "Isabella Victoria" "ISBELA" "Thais"
+        set color 8
+    next
+    edit "SLOG"
+        set uuid 52255b24-6269-51f0-ff70-e77347bb2f3d
+        set member "Ademir" "Vilma" "Vinicius" "Cau" "Michael Marin"
+        set color 7
+    next
+    edit "Jovem Aprendiz"
+        set uuid 7dbbbebe-b4c0-51f0-70f6-af5638b97f98
+        set member "CASSIANO JOVEM" "ISBELA" "KAUA JOVEM"
+        set color 30
+    next
+end

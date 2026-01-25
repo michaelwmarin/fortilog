@@ -1,0 +1,242 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container-fluid">
+    <h2 class="fw-bold mb-4">Gestão de Usuários</h2>
+
+    {% if erro %}
+    <div class="alert alert-danger mb-4 alert-dismissible fade show">
+        <i class="bi bi-exclamation-triangle-fill"></i> {{ erro }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endif %}
+
+    {% if sucesso %}
+    <div class="alert alert-success mb-4 alert-dismissible fade show">
+        <i class="bi bi-check-circle-fill"></i> {{ sucesso }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endif %}
+
+    <div class="row">
+        <div class="col-md-8 mb-4">
+            <div class="card border-0 shadow-sm">
+                <div class="card-header bg-white fw-bold">Usuários Cadastrados</div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover mb-0 align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>Nome / Login</th>
+                                    <th>Contato</th>
+                                    <th>Permissão</th>
+                                    <th>Grupo</th>
+                                    <th class="text-end">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user, dados in users.items() %}
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold">{{ dados.get('nome', user) }}</div>
+                                        <div class="text-muted small">{{ user }}</div>
+                                    </td>
+                                    <td>
+                                        <div class="small text-muted"><i class="bi bi-envelope"></i> {{ dados.get('email', '-') }}</div>
+                                        <div class="small text-muted"><i class="bi bi-telegram"></i> {{ dados.get('telegram', '-') }}</div>
+                                    </td>
+                                    <td>
+                                        {% if dados.role == 'ADM' %}
+                                            <span class="badge bg-primary">Administrador</span>
+                                        {% else %}
+                                            <span class="badge bg-secondary">Visualizador</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        {% if dados.role == 'ADM' %}
+                                            <span class="text-muted small">Total</span>
+                                        {% else %}
+                                            <span class="badge bg-info text-dark">{{ dados.get('group_access', 'Todos') }}</span>
+                                        {% endif %}
+                                    </td>
+                                    <td class="text-end">
+                                        <button class="btn btn-sm btn-outline-primary border-0 me-1" 
+                                                onclick="abrirModalEditar('{{ user }}', '{{ dados.get('nome', '') }}', '{{ dados.get('email', '') }}', '{{ dados.telegram or '' }}', '{{ dados.role }}', '{{ dados.get('group_access', 'TODOS') }}')">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </button>
+
+                                        {% if user != 'FortiLog' %}
+                                        <form method="post" class="d-inline" onsubmit="return confirm('Excluir este usuário?');">
+                                            <input type="hidden" name="action" value="delete">
+                                            <input type="hidden" name="del_user" value="{{ user }}">
+                                            <button class="btn btn-sm btn-outline-danger border-0"><i class="bi bi-trash"></i></button>
+                                        </form>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-header bg-primary text-white fw-bold">Novo Usuário</div>
+                <div class="card-body">
+                    <form method="post">
+                        <input type="hidden" name="action" value="add">
+                        
+                        <h6 class="text-muted small fw-bold border-bottom pb-1 mb-2">Dados Pessoais</h6>
+                        <div class="mb-2">
+                            <label class="form-label small mb-1">Nome Completo</label>
+                            <input type="text" name="new_nome" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small mb-1">E-mail</label>
+                            <input type="email" name="new_email" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small mb-1">Telegram ID</label>
+                            <input type="text" name="new_telegram" class="form-control form-control-sm" placeholder="Opcional">
+                        </div>
+
+                        <h6 class="text-muted small fw-bold border-bottom pb-1 mb-2">Acesso</h6>
+                        <div class="mb-2">
+                            <label class="form-label small mb-1">Login</label>
+                            <input type="text" name="new_user" class="form-control form-control-sm" required>
+                        </div>
+                        <div class="mb-2">
+                            <label class="form-label small mb-1">Senha</label>
+                            <div class="input-group input-group-sm">
+                                <input type="password" name="new_pass" id="p1" class="form-control" required>
+                                <button type="button" class="btn btn-outline-secondary" onclick="togglePass('p1')"><i class="bi bi-eye"></i></button>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label small mb-1">Confirmar Senha</label>
+                            <div class="input-group input-group-sm">
+                                <input type="password" name="confirm_pass" id="p2" class="form-control" required>
+                                <button type="button" class="btn btn-outline-secondary" onclick="togglePass('p2')"><i class="bi bi-eye"></i></button>
+                            </div>
+                        </div>
+
+                        <h6 class="text-muted small fw-bold border-bottom pb-1 mb-2">Permissões</h6>
+                        <div class="mb-2">
+                            <label class="form-label small mb-1">Nível</label>
+                            <select name="new_role" class="form-select form-select-sm" onchange="toggleGroupSelect(this, 'divNewGroup')">
+                                <option value="VIEW">Visualizador (Restrito)</option>
+                                <option value="ADM">Administrador (Total)</option>
+                            </select>
+                        </div>
+
+                        <div class="mb-3" id="divNewGroup">
+                            <label class="form-label small mb-1 text-primary fw-bold">Restringir ao Grupo</label>
+                            <select name="new_group_access" class="form-select form-select-sm border-primary">
+                                <option value="TODOS">Ver Tudo (Sem restrição)</option>
+                                {% for g_name in available_groups %}
+                                    <option value="{{ g_name }}">{{ g_name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <button class="btn btn-success w-100 fw-bold"><i class="bi bi-plus-circle"></i> Cadastrar</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalEditar" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title fw-bold">Editar Usuário</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post">
+                    <input type="hidden" name="action" value="edit">
+                    <input type="hidden" name="edit_original_user" id="edit_original_user">
+
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Nome</label>
+                        <input type="text" name="edit_nome" id="edit_nome" class="form-control">
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold">E-mail</label>
+                            <input type="email" name="edit_email" id="edit_email" class="form-control">
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label small fw-bold">Telegram ID</label>
+                            <input type="text" name="edit_telegram" id="edit_telegram" class="form-control">
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold">Permissão</label>
+                        <select name="edit_role" id="edit_role" class="form-select" onchange="toggleGroupSelect(this, 'divEditGroup')">
+                            <option value="VIEW">Visualizador</option>
+                            <option value="ADM">Administrador</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3" id="divEditGroup">
+                        <label class="form-label small fw-bold text-primary">Acesso ao Grupo</label>
+                        <select name="edit_group_access" id="edit_group_access" class="form-select border-primary">
+                            <option value="TODOS">Ver Tudo</option>
+                            {% for g_name in available_groups %}
+                                <option value="{{ g_name }}">{{ g_name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <hr>
+                    <label class="form-label small fw-bold text-danger">Alterar Senha (Opcional)</label>
+                    <div class="mb-2 input-group input-group-sm">
+                        <input type="password" name="edit_pass" id="ep1" class="form-control" placeholder="Nova senha">
+                        <button type="button" class="btn btn-outline-secondary" onclick="togglePass('ep1')"><i class="bi bi-eye"></i></button>
+                    </div>
+                    <div class="mb-3 input-group input-group-sm">
+                        <input type="password" name="edit_confirm_pass" id="ep2" class="form-control" placeholder="Confirmar nova senha">
+                        <button type="button" class="btn btn-outline-secondary" onclick="togglePass('ep2')"><i class="bi bi-eye"></i></button>
+                    </div>
+
+                    <button class="btn btn-primary w-100">Salvar Alterações</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function togglePass(id) {
+        let x = document.getElementById(id);
+        x.type = x.type === "password" ? "text" : "password";
+    }
+    
+    function toggleGroupSelect(selectEl, targetDivId) {
+        const div = document.getElementById(targetDivId);
+        if(selectEl.value === 'ADM') div.style.display = 'none';
+        else div.style.display = 'block';
+    }
+
+    function abrirModalEditar(user, nome, email, telegram, role, group) {
+        document.getElementById('edit_original_user').value = user;
+        document.getElementById('edit_nome').value = nome;
+        document.getElementById('edit_email').value = email;
+        document.getElementById('edit_telegram').value = telegram;
+        document.getElementById('edit_role').value = role;
+        document.getElementById('edit_group_access').value = group;
+        
+        toggleGroupSelect(document.getElementById('edit_role'), 'divEditGroup');
+        
+        var myModal = new bootstrap.Modal(document.getElementById('modalEditar'));
+        myModal.show();
+    }
+</script>
+{% endblock %}

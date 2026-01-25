@@ -1,0 +1,1421 @@
+config firewall address
+    edit "none"
+        set uuid 38f8b92e-03f1-51f0-cdac-c5a85a3ca4ec
+        set subnet 0.0.0.0 255.255.255.255
+    next
+    edit "login.microsoftonline.com"
+        set uuid 38f8ea7a-03f1-51f0-7752-e6ee844102ef
+        set type fqdn
+        set fqdn "login.microsoftonline.com"
+    next
+    edit "login.microsoft.com"
+        set uuid 38f91978-03f1-51f0-2361-0fdb4630593f
+        set type fqdn
+        set fqdn "login.microsoft.com"
+    next
+    edit "login.windows.net"
+        set uuid 38f946aa-03f1-51f0-e76c-6964f572f393
+        set type fqdn
+        set fqdn "login.windows.net"
+    next
+    edit "gmail.com"
+        set uuid 38f973fa-03f1-51f0-836e-f5b185d2f0f0
+        set type fqdn
+        set fqdn "gmail.com"
+    next
+    edit "wildcard.google.com"
+        set uuid 38f9a104-03f1-51f0-4e7a-b9a5286a8ab7
+        set type fqdn
+        set fqdn "*.google.com"
+    next
+    edit "wildcard.dropbox.com"
+        set uuid 38f9ce04-03f1-51f0-cbf0-aaaff1402538
+        set type fqdn
+        set fqdn "*.dropbox.com"
+    next
+    edit "all"
+        set uuid 391577d0-03f1-51f0-030e-331c64487684
+        set color 3
+    next 
+    edit "FIREWALL_AUTH_PORTAL_ADDRESS"
+        set uuid 391583ce-03f1-51f0-ac64-e50fcc51493c
+    next
+    edit "FABRIC_DEVICE"
+        set uuid 39158d06-03f1-51f0-6b0b-4c43dda4dcf4
+        set comment "IPv4 addresses of Fabric Devices."
+    next
+    edit "EMS_ALL_UNMANAGEABLE_CLIENTS"
+        set uuid ff5f7e1c-03f2-51f0-3689-1addb5e78c59
+        set type dynamic
+        set sub-type ems-tag
+    next
+    edit "EMS_ALL_UNKNOWN_CLIENTS"
+        set uuid ff5ffdba-03f2-51f0-8de4-d2726631c25f
+        set type dynamic
+        set sub-type ems-tag
+    next
+    edit "FCTEMS_ALL_FORTICLOUD_SERVERS"
+        set uuid 69a2c780-03f7-51f0-bf4d-49d873146fe4
+        set type dynamic
+        set sub-type ems-tag
+    next
+    edit "Michael Marin"
+        set uuid da8243f2-042b-51f0-320f-6a54d12a6788
+        set type mac
+        set color 16
+        set macaddr "B8:1E:A4:FE:45:95" "0C:CC:47:E9:B3:D0" "30:3B:7C:4A:8D:07" "38:14:28:4E:86:1D" "C0:4A:00:E4:0B:43"
+    next
+    edit "168.197.25.0/24"
+        set uuid 938e8bec-1acc-51f0-3536-3e51cffab3a8
+        set subnet 168.197.25.0 255.255.255.0
+    next
+    edit "168.197.26.0/24"
+        set uuid a8945cec-1acc-51f0-d5fa-9c23176000e4
+        set subnet 168.197.26.0 255.255.255.0
+    next
+    edit "200.106.193.0/25"
+        set uuid fe6651b6-1acc-51f0-7e40-f750912513f3
+        set subnet 200.106.193.0 255.255.255.128
+    next
+    edit "200.106.195.0/25"
+        set uuid 61ae7b0e-1acd-51f0-54e2-80ed31315ab7
+        set subnet 200.106.195.0 255.255.255.128
+    next
+    edit "200.106.193.128/25"
+        set uuid 6b5d2768-1acd-51f0-5436-22f698aa5ecd
+        set subnet 200.106.193.128 255.255.255.128
+    next
+    edit "200.106.195.128/25"
+        set uuid 8afb6814-1acd-51f0-6ca1-604af9446ea6
+        set subnet 200.106.195.128 255.255.255.128
+    next
+    edit "192.168.25.0/24"
+        set uuid b16bca5c-1acd-51f0-a804-4671faabbc51
+        set subnet 192.168.25.0 255.255.255.0
+    next
+    edit "192.168.240.0/24"
+        set uuid f250f0a6-1acd-51f0-4a08-da4dca6bf78b
+        set subnet 192.168.240.0 255.255.255.0
+    next
+    edit "SITE-FortiLog"
+        set uuid 311c1a18-1ace-51f0-0efb-1a27d502372d
+        set type fqdn
+        set allow-routing enable
+        set fqdn "*.FortiLog.com.br"
+    next
+    edit "Pontomais"
+        set uuid 697e0f82-1acf-51f0-03b1-22a0a0cfa2a8
+        set type fqdn
+        set fqdn "*pontomais.com.br"
+    next
+    edit "Serasa experian"
+        set uuid cfa4251c-1acf-51f0-d8b0-94a87e4567b4
+        set type fqdn
+        set fqdn "*serasaexperian.com.br"
+    next 
+    edit "172.18.255.0/24"
+        set uuid 01eb5180-1ad0-51f0-d94f-ef7aca761655
+        set subnet 172.18.255.0 255.255.255.0
+    next
+    edit "172.31.255.0/24"
+        set uuid 2d740d6a-1ad0-51f0-411c-d1324b74ad4b
+        set subnet 172.31.255.0 255.255.255.0
+    next
+    edit "Deezer"
+        set uuid 84e2cc6c-1ad0-51f0-1ea4-4db2447d7562
+        set type fqdn
+        set fqdn "*deezer.com"
+    next
+    edit "portaldoassinante"
+        set uuid bd71413a-1ad0-51f0-5250-08913cfafb95
+        set type fqdn
+        set fqdn "www.portaldoassinante.com*"
+    next
+    edit "comologar.com.br"
+        set uuid f7a9e320-1ad0-51f0-47ce-ac6016937258
+        set type fqdn
+        set fqdn "*comologar.com.br"
+    next
+    edit "You-Tube"
+        set uuid 2b066328-1ad2-51f0-c417-35ed7c475439
+        set type fqdn
+        set fqdn "*youtube.com*"
+    next
+    edit "192.168.32.0/23"
+        set uuid 00404a80-1c4b-51f0-7df4-6371c62b3682
+        set subnet 192.168.32.0 255.255.254.0
+    next
+    edit "Bing"
+        set uuid 1c49c810-1c63-51f0-3683-cfb3df6511b2
+        set type fqdn
+        set fqdn "*.bing.com"
+    next
+    edit "OneDrive"
+        set uuid 568d406c-1c70-51f0-a01e-29b93fd3b188
+        set type fqdn
+        set fqdn "*onedrive.live.com"
+    next
+    edit "Netflix"
+        set uuid 8830547e-1c70-51f0-3043-e739f6f43969
+        set type fqdn
+        set fqdn "*netflix.com"
+    next
+    edit "agiltelecom.com.br"
+        set uuid e888377a-1c74-51f0-3c7e-aca9a725c1ee
+        set type fqdn
+        set fqdn "*agiltelecom.com.br"
+    next
+    edit "oltcloud"
+        set uuid 20b72bba-1c75-51f0-1560-52764c2a3fdf
+        set type fqdn
+        set fqdn "*FortiLog.oltcloud*"
+    next
+    edit "Instagram"
+        set uuid 92689a7e-1c83-51f0-a9ee-529519936de4
+        set type fqdn
+        set fqdn "*instagram*"
+    next
+    edit "Equipamentos da Base"
+        set uuid adb04c24-1ee9-51f0-dc30-8095fc36001f
+        set type mac
+        set color 17
+        set macaddr "A8:42:A1:F1:30:EA" "A8:42:A1:F1:30:DE" "D0:D0:03:43:D1:00" "b8:69:f4:fe:6a:cb" "b8:69:f4:fe:9e:ac" "9c:a2:f4:00:0b:ba" "1C:1A:1B:09:F3:42" "78:2B:CB:BC:3B:B4" "F4:02:23:B5:7F:C2" "1C:4D:70:C2:71:7B" "A4:4C:C8:27:1A:7A" "B0:FE:E5:12:88:D3"
+    next
+    edit "Filipe"
+        set uuid 341e8f62-1f82-51f0-0390-313a84828fe9
+        set type mac
+        set color 16
+        set macaddr "B8:1E:A4:1D:55:77" "DA:17:40:AD:05:19" "2C:0B:97:11:7C:D8" "32:41:C0:87:EF:D1" "90:B6:22:18:93:05" "90:B6:22:96:B8:99"
+    next
+    edit "PROJETO-FortiLog"
+        set uuid 5d332a02-1f82-51f0-27fe-064e0362382d
+        set type mac
+        set color 16
+        set macaddr "C0:35:32:0D:BA:5D"
+    next
+    edit "Lenilso Felipe"
+        set uuid 9a7bb1d6-1f82-51f0-567d-a1c5e2204a96
+        set type mac
+        set color 16
+        set macaddr "64:1B:2F:B9:F1:3B" "44:85:00:FD:E4:D6"
+    next
+    edit "Victor"
+        set uuid 4075bbc6-1f84-51f0-57bf-eb8db88b81ae
+        set type mac
+        set color 16
+        set macaddr "9A:1F:12:9C:00:F4" "80:54:2D:00:32:15" "1C:4D:70:CC:32:4C"
+    next
+    edit "Israel"
+        set uuid 9556aa1e-1f85-51f0-c10e-f73e745f7ce9
+        set type mac
+        set color 16
+        set macaddr "C0:35:32:CE:AD:9F" "46:95:EE:90:F8:AF" "4C:02:20:F8:55:26" "1C:CC:D6:0E:6A:1F" "6E:5F:31:7E:35:AB"
+    next
+    edit "Nathan"
+        set uuid 8b92859c-1f8b-51f0-7f08-afad23ce4749
+        set type mac
+        set color 23
+        set macaddr "D6:63:08:20:2E:88" "62:D3:D9:11:1F:B2" "70:08:94:E7:41:63" "0C:CC:47:EE:B3:B6" "18:E7:B0:05:E1:8B"
+    next
+    edit "Gabriel"
+        set uuid 9ad27508-1f8b-51f0-fe71-ea84e4ada75f
+        set type mac
+        set color 23
+        set macaddr "BA:9D:F9:7C:72:1c" "0C:CC:47:EE:A5:47" "70:08:94:E7:CC:7F" "5a:45:9d:45:08:06"
+    next
+    edit "Ademir"
+        set uuid add38b4c-1f8b-51f0-bee3-9dd84c157277
+        set type mac
+        set color 16
+        set macaddr "1E:F5:CF:0D:78:D2" "5c:e9:1e:a4:11:7c" "84:2F:57:3B:64:B6"
+    next
+    edit "Leandro Financeiro"
+        set uuid e1cc4452-1f8b-51f0-2e11-74a8b3fa335c
+        set type mac
+        set color 16
+        set macaddr "C8:15:4E:27:D8:41" "DC:95:66:81:38:80"
+    next
+    edit "Café"
+        set uuid 2700e16c-1fba-51f0-f173-d33f648fde3c
+        set type mac
+        set color 16
+        set macaddr "D0:94:66:C1:7B:7A" "5C:CD:5B:7E:06:67" "60:68:4E:7A:6E:74"
+    next
+    edit "Aline Perreira"
+        set uuid 9490e914-1fbc-51f0-0103-0e9a00ad2aa4
+        set type mac
+        set color 10
+        set macaddr "78:2B:CB:BC:F2:AA"
+    next
+    edit "Emely"
+        set uuid 18464b8c-1fbd-51f0-c5cf-77b8814c4bbe
+        set type mac
+        set color 10
+        set macaddr "74:86:7A:FB:A3:77"
+    next
+    edit "Ivan"
+        set uuid 769d73c2-1fbd-51f0-a280-d7498e123ccf
+        set type mac
+        set color 10
+        set macaddr "34:E6:D7:FC:5B:31"
+    next
+    edit "Greciel"
+        set uuid bc6540ce-1fbd-51f0-6481-c2618b5c7fc7
+        set type mac
+        set color 10
+        set macaddr "74:86:7A:FB:DE:80"
+    next
+    edit "Mirelle"
+        set uuid 28af67a0-1fbe-51f0-fa98-42d4402a5139
+        set type mac
+        set color 10
+        set macaddr "74:86:7A:FC:53:68"
+    next
+    edit "Bianca"
+        set uuid 482567e2-1fbe-51f0-7ca5-60e849cc6914
+        set type mac
+        set color 10
+        set macaddr "78:2B:CB:BC:1A:C1" "60:57:C8:3F:5F:15"
+    next
+    edit "Narciso"
+        set uuid b1f7bd0a-1fbe-51f0-32df-961cd29f399e
+        set type mac
+        set color 10
+        set macaddr "74:E6:E2:D3:97:75" "cc:eb:5e:82:bb:12" "64:0C:91:67:10:8B"
+    next
+    edit "Debora Moura"
+        set uuid 0857f188-1fbf-51f0-f32a-38c743fb4430
+        set type mac
+        set color 10
+        set macaddr "74:86:7A:FB:31:E0" "E4:84:D3:87:B1:67"
+    next
+    edit "VENDAS_EXT"
+        set uuid 761a332a-1fbf-51f0-a0b7-8105c2796dd7
+        set type mac
+        set color 10
+        set macaddr "90:B1:1C:F7:AE:CA"
+    next
+    edit "Fernando"
+        set uuid f2eec42e-1fbf-51f0-c736-f212cc981788
+        set type mac
+        set color 16
+        set macaddr "64:1C:67:78:76:23" "5C:C5:D4:35:A7:00" "98:D7:42:85:3A:6A"
+    next
+    edit "Cirilo"
+        set uuid b13abf50-1ff2-51f0-ddce-debb7901c70e
+        set type mac
+        set color 16
+        set macaddr "D0:AE:05:EF:39:EE"
+    next
+    edit "Impressora"
+        set uuid eb4193fe-1ff2-51f0-32c4-45084cad3d67
+        set type mac
+        set color 17
+        set macaddr "00:c0:ee:7d:64:7d" "00:c0:ee:7d:65:89" "78:48:59:8c:89:1b" "3c:2a:f4:3a:d9:7d" "dc:c2:c9:1b:dc:cd" "DC:C2:C9:0D:A8:BF"
+    next
+    edit "Câmera-Intelbras"
+        set uuid 2aab58b8-1ff3-51f0-58f6-a79d2d71466b
+        set type mac
+        set color 17
+        set macaddr "80:85:44:67:5a:1d"
+    next
+    edit "web.whatsapp.com"
+        set uuid 53f76ba0-2000-51f0-989e-572aed44f0db
+        set type fqdn
+        set fqdn "web.whatsapp.com"
+    next
+    edit "Pedro Doria"
+        set uuid 8345e376-202f-51f0-2e53-b5251daa1442
+        set type mac
+        set color 23
+        set macaddr "24:B2:B9:0B:10:61" "04:58:5D:20:74:A3" "B8:22:0C:00:E5:F1"
+    next
+    edit "Elber"
+        set uuid acf3bd38-202f-51f0-61fd-2a7f32af1f25
+        set type mac
+        set color 5
+        set macaddr "F6:D5:AC:D8:EE:FF" "D0:94:66:9F:1E:43"
+    next
+    edit "Henzom"
+        set uuid d73e1890-202f-51f0-0320-79dd5d578401
+        set type mac
+        set color 8
+        set macaddr "34:E6:D7:FC:8E:63"
+    next
+    edit "Discord"
+        set uuid 49940fbc-2030-51f0-5634-02b630ac6162
+        set type fqdn
+        set fqdn "*discord*"
+    next
+    edit "RH"
+        set uuid 3d7136d2-2031-51f0-6306-b0ee8c722cfb
+        set type mac
+        set color 32
+        set macaddr "34:E6:D7:FC:7D:86" "98:D7:42:C7:23:46"
+    next
+    edit "ALIF Leandro"
+        set uuid 3cb75b7a-2033-51f0-1694-d6fd6026702a
+        set type mac
+        set color 5
+        set macaddr "C8:15:4E:1C:95:80" "C8:89:F3:6B:28:CA"
+    next
+    edit "Will"
+        set uuid bbf4940c-2033-51f0-469c-bec547c2a99a
+        set type mac
+        set color 32
+        set macaddr "34:E6:D7:FC:D8:F5" "0C:C6:FD:C1:C0:4A"
+    next
+    edit "Vilma"
+        set uuid c9008dbc-2034-51f0-dcef-f663205bc92f
+        set type mac
+        set color 16
+        set macaddr "18:DB:F2:2D:AA:52" "86:63:F9:62:7D:44" "28:59:23:89:21:96" "68:4D:B6:E5:44:A8" "F0:D5:BF:5B:7A:89" "84:9E:56:F8:49:E7" "0A:59:64:7E:85:66"
+    next
+    edit "Nicolas"
+        set uuid 4430f250-2036-51f0-1885-041d215e1f4c
+        set type mac
+        set color 8
+        set macaddr "34:E6:D7:FC:A8:A8" "4C:1D:96:22:DF:03"
+    next
+    edit "Luis Augusto"
+        set uuid 70573ea2-2036-51f0-4d7a-25015727d8ac
+        set type mac
+        set color 25
+        set macaddr "40:FA:FE:58:C4:AB"
+    next
+    edit "Breno"
+        set uuid 8a8804a0-2036-51f0-8e49-2ee2246610e6
+        set type mac
+        set color 25
+        set macaddr "8A:00:2B:D7:E1:73"
+    next
+    edit "Moura"
+        set uuid b03551b8-203a-51f0-5095-88181e7fd385
+        set type mac
+        set color 8
+        set macaddr "84:7B:EB:E7:E2:82"
+    next
+    edit "CGNA 1"
+        set uuid 2622e4f2-203c-51f0-fb00-8f927fd9d5cf
+        set type iprange
+        set start-ip 100.92.0.2
+        set end-ip 100.92.63.254
+    next
+    edit "CGNA 2"
+        set uuid 2dd874e6-203c-51f0-0592-1da7102a44ce
+        set type iprange
+        set start-ip 100.93.0.2
+        set end-ip 100.93.63.254
+    next
+    edit "CGNA 3"
+        set uuid 425f3c74-203c-51f0-8e77-4685b01b934f
+        set type iprange
+        set start-ip 100.97.0.2
+        set end-ip 100.97.63.254
+    next
+    edit "CGNA 4"
+        set uuid 52c15f7a-203c-51f0-127f-d5cc1a62c2ef
+        set type iprange
+        set start-ip 100.97.64.2
+        set end-ip 100.97.127.254
+    next
+    edit "CGNA 5"
+        set uuid 7e63214e-2042-51f0-4156-7b9a78deaa0f
+        set type iprange
+        set start-ip 100.99.0.2
+        set end-ip 100.99.255.253
+    next
+    edit "Amanda"
+        set uuid aec52dc4-204b-51f0-bb00-fb4701e2ec39
+        set type mac
+        set color 10
+        set macaddr "34:E6:D7:FC:D8:54"
+    next
+    edit "Pedro comecial"
+        set uuid d2f815ca-204c-51f0-2655-271dcf88f2fc
+        set type mac
+        set color 10
+        set macaddr "74:86:7A:FB:2F:41"
+    next
+    edit "Kley"
+        set uuid 129409ce-2051-51f0-ed9d-835a79816898
+        set type mac
+        set color 8
+        set macaddr "34:E6:D7:FC:7D:8C"
+    next
+    edit "Jorge"
+        set uuid e9f7f6f8-2058-51f0-9f65-cef140552ef4
+        set type mac
+        set color 8
+        set macaddr "18:A5:9C:B5:9A:51" "2C:15:BF:CB:46:DF"
+    next
+    edit "HBO MAX"
+        set uuid 363d86e4-2069-51f0-7d2c-cab3f17d9d1b
+        set type fqdn
+        set fqdn "www.max.com"
+    next 
+    edit "auth.max.com"
+        set uuid 82f94ad6-2069-51f0-a492-8c5f50181bca
+        set type fqdn
+        set fqdn "auth.max.com"
+    next
+    edit "receita.fazenda"
+        set uuid b0580c84-206d-51f0-cb03-b667ecfd2a23
+        set type fqdn
+        set fqdn "*receita.fazenda.gov.br"
+    next
+    edit "Robsom"
+        set uuid a26a25b4-2070-51f0-f728-7eebe8ccd15f
+        set type mac
+        set color 25
+        set macaddr "74:38:22:08:CE:7A"
+    next
+    edit "Fortigate"
+        set uuid e0cd66ec-2e79-51f0-c0a9-8c2c2bcfb859
+        set type mac
+        set color 17
+        set macaddr "78:18:ec:11:7d:b2"
+    next
+    edit "Vinicius"
+        set uuid 5a755234-2f1f-51f0-8c07-916e73f9e79e
+        set type mac
+        set color 16
+        set macaddr "B6:C4:7B:B7:C7:F8" "B8:1E:A4:1D:48:7D" "28:C2:1F:54:BF:F3" "F8:DA:0C:24:0C:89" "CC:27:46:E4:5C:D9"
+    next
+    edit "Diego"
+        set uuid 34652f00-2f20-51f0-9d32-92a6efca8709
+        set type mac
+        set color 16
+        set macaddr "6C:F7:84:23:69:8A" "DC:21:5C:F4:1B:E0" "70:69:79:A7:45:AC" "20:99:52:FB:50:64"
+    next
+    edit "Pollyanna"
+        set uuid 03c2ab1e-2f22-51f0-c9c2-49e334451030
+        set type mac
+        set color 32
+        set macaddr "6E:8E:3C:02:FF:AF" "8C:AD:48:19:47:E6" "FC:D2:02:29:CC:07"
+    next
+    edit "Ivane"
+        set uuid 08f78e74-2f27-51f0-9bf7-988eff5e2b46
+        set type mac
+        set color 16
+        set macaddr "D0:AB:D5:52:7E:8E" "52:21:AC:48:D5:55"
+    next
+    edit "update.fortiguard.net"
+        set uuid 2cbe4578-2f2c-51f0-521c-a5daddebd246
+        set type fqdn
+        set fqdn "update.fortiguard.net"
+    next
+    edit "service.fortiguard.net"
+        set uuid 7e512950-2f2c-51f0-998a-1ec881b531ca
+        set type fqdn
+        set fqdn "service.fortiguard.net"
+    next
+    edit "directregistration.fortinet.com"
+        set uuid cf2c9012-2f2c-51f0-2f84-ea2295dc8879
+        set type fqdn
+        set fqdn "directregistration.fortinet.com"
+    next
+    edit "PC-TESTE"
+        set uuid 0f6e0788-4ab6-51f0-72d9-4e745f8a94c4
+        set type mac
+        set macaddr "D0:94:66:9F:20:0E" "EC:74:D7:26:9C:10"
+    next
+    edit "Dinatto"
+        set uuid f3aa4b8c-4e17-51f0-1cf6-e279708782ab
+        set type mac
+        set color 8
+        set macaddr "34:E6:D7:FC:D9:8D"
+    next
+    edit "Putti"
+        set uuid 4dd1a2bc-5030-51f0-751d-e43fc1886ebc
+        set type mac
+        set color 8
+        set macaddr "34:E6:D7:FC:85:75"
+    next
+    edit "Ray"
+        set uuid 72659bce-5030-51f0-8205-cc4b2b99806d
+        set type mac
+        set color 8
+        set macaddr "78:2B:CB:BC:7A:61"
+    next
+    edit "Wendel"
+        set uuid 87b865ec-5030-51f0-538a-62501130d6e9
+        set type mac
+        set color 8
+        set macaddr "74:86:7A:FB:2C:53"
+    next
+    edit "Pedro Lucca"
+        set uuid b94398ac-5030-51f0-d3da-ed21573f80c6
+        set type mac
+        set color 8
+        set macaddr "34:E6:D7:FC:60:18"
+    next
+    edit "Wesley"
+        set uuid 04e8cf20-5031-51f0-ddb7-c14e7d23bd03
+        set type mac
+        set color 8
+        set macaddr "78:2B:CB:C4:A5:6F"
+    next
+    edit "Thais"
+        set uuid 15da9ea8-5031-51f0-4e3c-64537277869d
+        set type mac
+        set color 8
+        set macaddr "F8:B1:56:FC:FE:56" "98:D7:42:E0:9E:3A"
+    next
+    edit "Vitor Rosa"
+        set uuid 2753678c-5031-51f0-c5e4-675e28ec78e6
+        set type mac
+        set color 8
+        set macaddr "34:E6:D7:FC:5B:DE"
+    next 
+    edit "Bruna"
+        set uuid 87879ce0-5031-51f0-88b0-7460fbaf46a6
+        set type mac
+        set color 8
+        set macaddr "74:86:7A:FB:05:6C"
+    next
+    edit "Renato"
+        set uuid f94cef0e-534e-51f0-515c-e5cdaf30d9fb
+        set type mac
+        set color 16
+        set macaddr "12:8F:C5:04:F5:69" "FC:18:3C:47:55:E7" "F8:C3:CC:27:A7:C3" "A4:4E:31:68:F1:2C"
+    next
+    edit "Deco"
+        set uuid 986a2b0a-5355-51f0-950f-cb78043eb8b1
+        set type mac
+        set color 16
+        set macaddr "FE:43:2D:83:BA:57" "14:49:D4:F4:A2:15" "5C:CD:5B:80:6E:2F" "D0:94:66:C4:B6:A6"
+    next
+    edit "Victhor"
+        set uuid 6de9919e-5356-51f0-6601-cc4f452a2fa6
+        set type mac
+        set color 23
+        set macaddr "76:F2:06:0F:3C:31"
+    next
+    edit "Cau"
+        set uuid 65661970-5743-51f0-20e1-cf623901ae8b
+        set type mac
+        set color 16
+        set macaddr "38:00:25:1D:53:17" "32:44:ED:9C:6A:AD" "28:8E:EC:D7:2E:BD" "80:96:98:62:AC:8E"
+    next
+    edit "Marcelo"
+        set uuid 631c547e-5c0a-51f0-6968-dfde8186ce2b
+        set type mac
+        set color 16
+        set macaddr "0C:07:DF:09:86:FD" "4C:1D:96:23:0A:F0"
+    next
+    edit "Fernando Financeiro"
+        set uuid e6e2b93e-623f-51f0-18c3-7e1d7dac9b2a
+        set type mac
+        set color 16
+        set macaddr "A4:63:A1:24:2B:BE" "08:97:98:68:5C:9B"
+    next
+    edit "Roberto-comercial"
+        set uuid 5f1ed56e-663b-51f0-7caa-cccdfcd15309
+        set type mac
+        set color 10
+        set macaddr "70:32:17:16:F1:07"
+    next
+    edit "Rony"
+        set uuid 0dc6a414-68af-51f0-4f14-1747cf7f55be
+        set type mac
+        set color 16
+        set macaddr "60:FD:A6:3F:11:E7" "54:13:79:EC:E3:B7"
+    next
+    edit "Visitante"
+        set uuid 52127962-68b5-51f0-2713-d238751bc549
+        set type mac
+        set color 16
+        set macaddr "78:46:5C:18:EB:E1" "5C:CD:5B:19:A5:F0" "9C:60:76:7F:2A:0D" "00:24:D7:36:D9:B0" "24:D3:37:42:F3:A1"
+    next
+    edit "Wesley LINK"
+        set uuid 3834d556-7208-51f0-22ba-5feac2d6c9d3
+        set type mac
+        set color 16
+        set macaddr "5C:CD:5B:19:A5:F0" "18:E7:B0:E8:13:EF"
+    next
+    edit "RH-Gezebel Santos"
+        set uuid b64cb934-7381-51f0-c0e4-b22bd08422c5
+        set type mac
+        set color 32
+        set macaddr "88:1E:5A:DB:0B:A7" "64:49:7D:E1:FC:CB" "DE:CB:8A:DD:F3:78" "4C:63:71:86:A2:D1"
+    next
+    edit "ISBELA"
+        set uuid b695403a-9ec6-51f0-afc6-d6dc8fb8a027
+        set type mac
+        set color 9
+        set macaddr "94:D3:31:A1:97:FE"
+    next
+    edit "CASSIANO JOVEM"
+        set uuid 10440d64-9ec7-51f0-53f6-993e357c8178
+        set type mac
+        set color 32
+        set macaddr "74:38:22:DE:4B:34"
+    next
+    edit "KAUA JOVEM"
+        set uuid 895b4cce-9ef6-51f0-35fa-f56933ff8671
+        set type mac
+        set color 32
+        set macaddr "d4:5b:51:a3:87:91"
+    next
+    edit "Isabella Victoria"
+        set uuid a340d6f4-9ef6-51f0-cb83-74582172f373
+        set type mac
+        set color 8
+        set macaddr "7A:86:97:51:F7:1B"
+    next
+    edit "Patricia"
+        set uuid 15df0872-a2b5-51f0-8cf6-c2a8a5c14630
+        set type mac
+        set color 15
+        set macaddr "70:32:17:35:89:55"
+    next
+    edit "Aparelhos Pesquisa Satisfação"
+        set uuid 11c7456c-af74-51f0-adba-02afc8a32cb5
+        set type mac
+        set color 2
+        set macaddr "E8:5A:8B:B4:21:22" "4C:02:20:F8:55:26" "1C:CC:D6:0E:6A:1F"
+    next
+    edit "Notebook-TESTE"
+        set uuid 2c0a405e-b4c5-51f0-798f-d5e5cbba5a24
+        set type mac
+        set macaddr "10:91:D1:28:CB:A7"
+    next
+    edit "Alef Hotencio"
+        set uuid bff74728-be32-51f0-23fe-d2eb9605c5d4
+        set type mac
+        set color 8
+        set macaddr "94:8B:93:F8:70:BA"
+    next
+    edit "Gerador"
+        set uuid 5a928186-d606-51f0-73b4-cfff539edb59
+        set type mac
+        set macaddr "90:2C:09:39:6C:7A"
+    next
+    edit "Cartola"
+        set uuid 8fde4cb2-e4b6-51f0-1b18-cfc60ee663f8
+        set type fqdn
+        set fqdn "*cartola.globo.com"
+    next
+    edit "Ge.globo"
+        set uuid 258e405a-e4b7-51f0-de96-2fa41d500cb8
+        set type fqdn
+        set fqdn "*ge.globo.com"
+    next
+    edit "VIGI NVR4064H"
+        set uuid 3597d784-e4eb-51f0-e09f-8dc8c69b5a98
+        set type mac
+        set color 17
+        set macaddr "a8:29:48:bf:f1:c1"
+    next
+endconfig firewall address
+    edit "none"
+        set uuid 38f8b92e-03f1-51f0-cdac-c5a85a3ca4ec
+        set subnet 0.0.0.0 255.255.255.255
+    next
+    edit "login.microsoftonline.com"
+        set uuid 38f8ea7a-03f1-51f0-7752-e6ee844102ef
+        set type fqdn
+        set fqdn "login.microsoftonline.com"
+    next
+    edit "login.microsoft.com"
+        set uuid 38f91978-03f1-51f0-2361-0fdb4630593f
+        set type fqdn
+        set fqdn "login.microsoft.com"
+    next
+    edit "login.windows.net"
+        set uuid 38f946aa-03f1-51f0-e76c-6964f572f393
+        set type fqdn
+        set fqdn "login.windows.net"
+    next
+    edit "gmail.com"
+        set uuid 38f973fa-03f1-51f0-836e-f5b185d2f0f0
+        set type fqdn
+        set fqdn "gmail.com"
+    next
+    edit "wildcard.google.com"
+        set uuid 38f9a104-03f1-51f0-4e7a-b9a5286a8ab7
+        set type fqdn
+        set fqdn "*.google.com"
+    next
+    edit "wildcard.dropbox.com"
+        set uuid 38f9ce04-03f1-51f0-cbf0-aaaff1402538
+        set type fqdn
+        set fqdn "*.dropbox.com"
+    next
+    edit "all"
+        set uuid 391577d0-03f1-51f0-030e-331c64487684
+        set color 3
+    next 
+    edit "FIREWALL_AUTH_PORTAL_ADDRESS"
+        set uuid 391583ce-03f1-51f0-ac64-e50fcc51493c
+    next
+    edit "FABRIC_DEVICE"
+        set uuid 39158d06-03f1-51f0-6b0b-4c43dda4dcf4
+        set comment "IPv4 addresses of Fabric Devices."
+    next
+    edit "EMS_ALL_UNMANAGEABLE_CLIENTS"
+        set uuid ff5f7e1c-03f2-51f0-3689-1addb5e78c59
+        set type dynamic
+        set sub-type ems-tag
+    next
+    edit "EMS_ALL_UNKNOWN_CLIENTS"
+        set uuid ff5ffdba-03f2-51f0-8de4-d2726631c25f
+        set type dynamic
+        set sub-type ems-tag
+    next
+    edit "FCTEMS_ALL_FORTICLOUD_SERVERS"
+        set uuid 69a2c780-03f7-51f0-bf4d-49d873146fe4
+        set type dynamic
+        set sub-type ems-tag
+    next
+    edit "Michael Marin"
+        set uuid da8243f2-042b-51f0-320f-6a54d12a6788
+        set type mac
+        set color 16
+        set macaddr "B8:1E:A4:FE:45:95" "0C:CC:47:E9:B3:D0" "30:3B:7C:4A:8D:07" "38:14:28:4E:86:1D" "C0:4A:00:E4:0B:43"
+    next
+    edit "168.197.25.0/24"
+        set uuid 938e8bec-1acc-51f0-3536-3e51cffab3a8
+        set subnet 168.197.25.0 255.255.255.0
+    next
+    edit "168.197.26.0/24"
+        set uuid a8945cec-1acc-51f0-d5fa-9c23176000e4
+        set subnet 168.197.26.0 255.255.255.0
+    next
+    edit "200.106.193.0/25"
+        set uuid fe6651b6-1acc-51f0-7e40-f750912513f3
+        set subnet 200.106.193.0 255.255.255.128
+    next
+    edit "200.106.195.0/25"
+        set uuid 61ae7b0e-1acd-51f0-54e2-80ed31315ab7
+        set subnet 200.106.195.0 255.255.255.128
+    next
+    edit "200.106.193.128/25"
+        set uuid 6b5d2768-1acd-51f0-5436-22f698aa5ecd
+        set subnet 200.106.193.128 255.255.255.128
+    next
+    edit "200.106.195.128/25"
+        set uuid 8afb6814-1acd-51f0-6ca1-604af9446ea6
+        set subnet 200.106.195.128 255.255.255.128
+    next
+    edit "192.168.25.0/24"
+        set uuid b16bca5c-1acd-51f0-a804-4671faabbc51
+        set subnet 192.168.25.0 255.255.255.0
+    next
+    edit "192.168.240.0/24"
+        set uuid f250f0a6-1acd-51f0-4a08-da4dca6bf78b
+        set subnet 192.168.240.0 255.255.255.0
+    next
+    edit "SITE-FortiLog"
+        set uuid 311c1a18-1ace-51f0-0efb-1a27d502372d
+        set type fqdn
+        set allow-routing enable
+        set fqdn "*.FortiLog.com.br"
+    next
+    edit "Pontomais"
+        set uuid 697e0f82-1acf-51f0-03b1-22a0a0cfa2a8
+        set type fqdn
+        set fqdn "*pontomais.com.br"
+    next
+    edit "Serasa experian"
+        set uuid cfa4251c-1acf-51f0-d8b0-94a87e4567b4
+        set type fqdn
+        set fqdn "*serasaexperian.com.br"
+    next 
+    edit "172.18.255.0/24"
+        set uuid 01eb5180-1ad0-51f0-d94f-ef7aca761655
+        set subnet 172.18.255.0 255.255.255.0
+    next
+    edit "172.31.255.0/24"
+        set uuid 2d740d6a-1ad0-51f0-411c-d1324b74ad4b
+        set subnet 172.31.255.0 255.255.255.0
+    next
+    edit "Deezer"
+        set uuid 84e2cc6c-1ad0-51f0-1ea4-4db2447d7562
+        set type fqdn
+        set fqdn "*deezer.com"
+    next
+    edit "portaldoassinante"
+        set uuid bd71413a-1ad0-51f0-5250-08913cfafb95
+        set type fqdn
+        set fqdn "www.portaldoassinante.com*"
+    next
+    edit "comologar.com.br"
+        set uuid f7a9e320-1ad0-51f0-47ce-ac6016937258
+        set type fqdn
+        set fqdn "*comologar.com.br"
+    next
+    edit "You-Tube"
+        set uuid 2b066328-1ad2-51f0-c417-35ed7c475439
+        set type fqdn
+        set fqdn "*youtube.com*"
+    next
+    edit "192.168.32.0/23"
+        set uuid 00404a80-1c4b-51f0-7df4-6371c62b3682
+        set subnet 192.168.32.0 255.255.254.0
+    next
+    edit "Bing"
+        set uuid 1c49c810-1c63-51f0-3683-cfb3df6511b2
+        set type fqdn
+        set fqdn "*.bing.com"
+    next
+    edit "OneDrive"
+        set uuid 568d406c-1c70-51f0-a01e-29b93fd3b188
+        set type fqdn
+        set fqdn "*onedrive.live.com"
+    next
+    edit "Netflix"
+        set uuid 8830547e-1c70-51f0-3043-e739f6f43969
+        set type fqdn
+        set fqdn "*netflix.com"
+    next
+    edit "agiltelecom.com.br"
+        set uuid e888377a-1c74-51f0-3c7e-aca9a725c1ee
+        set type fqdn
+        set fqdn "*agiltelecom.com.br"
+    next
+    edit "oltcloud"
+        set uuid 20b72bba-1c75-51f0-1560-52764c2a3fdf
+        set type fqdn
+        set fqdn "*FortiLog.oltcloud*"
+    next
+    edit "Instagram"
+        set uuid 92689a7e-1c83-51f0-a9ee-529519936de4
+        set type fqdn
+        set fqdn "*instagram*"
+    next
+    edit "Equipamentos da Base"
+        set uuid adb04c24-1ee9-51f0-dc30-8095fc36001f
+        set type mac
+        set color 17
+        set macaddr "A8:42:A1:F1:30:EA" "A8:42:A1:F1:30:DE" "D0:D0:03:43:D1:00" "b8:69:f4:fe:6a:cb" "b8:69:f4:fe:9e:ac" "9c:a2:f4:00:0b:ba" "1C:1A:1B:09:F3:42" "78:2B:CB:BC:3B:B4" "F4:02:23:B5:7F:C2" "1C:4D:70:C2:71:7B" "A4:4C:C8:27:1A:7A" "B0:FE:E5:12:88:D3"
+    next
+    edit "Filipe"
+        set uuid 341e8f62-1f82-51f0-0390-313a84828fe9
+        set type mac
+        set color 16
+        set macaddr "B8:1E:A4:1D:55:77" "DA:17:40:AD:05:19" "2C:0B:97:11:7C:D8" "32:41:C0:87:EF:D1" "90:B6:22:18:93:05" "90:B6:22:96:B8:99"
+    next
+    edit "PROJETO-FortiLog"
+        set uuid 5d332a02-1f82-51f0-27fe-064e0362382d
+        set type mac
+        set color 16
+        set macaddr "C0:35:32:0D:BA:5D"
+    next
+    edit "Lenilso Felipe"
+        set uuid 9a7bb1d6-1f82-51f0-567d-a1c5e2204a96
+        set type mac
+        set color 16
+        set macaddr "64:1B:2F:B9:F1:3B" "44:85:00:FD:E4:D6"
+    next
+    edit "Victor"
+        set uuid 4075bbc6-1f84-51f0-57bf-eb8db88b81ae
+        set type mac
+        set color 16
+        set macaddr "9A:1F:12:9C:00:F4" "80:54:2D:00:32:15" "1C:4D:70:CC:32:4C"
+    next
+    edit "Israel"
+        set uuid 9556aa1e-1f85-51f0-c10e-f73e745f7ce9
+        set type mac
+        set color 16
+        set macaddr "C0:35:32:CE:AD:9F" "46:95:EE:90:F8:AF" "4C:02:20:F8:55:26" "1C:CC:D6:0E:6A:1F" "6E:5F:31:7E:35:AB"
+    next
+    edit "Nathan"
+        set uuid 8b92859c-1f8b-51f0-7f08-afad23ce4749
+        set type mac
+        set color 23
+        set macaddr "D6:63:08:20:2E:88" "62:D3:D9:11:1F:B2" "70:08:94:E7:41:63" "0C:CC:47:EE:B3:B6" "18:E7:B0:05:E1:8B"
+    next
+    edit "Gabriel"
+        set uuid 9ad27508-1f8b-51f0-fe71-ea84e4ada75f
+        set type mac
+        set color 23
+        set macaddr "BA:9D:F9:7C:72:1c" "0C:CC:47:EE:A5:47" "70:08:94:E7:CC:7F" "5a:45:9d:45:08:06"
+    next
+    edit "Ademir"
+        set uuid add38b4c-1f8b-51f0-bee3-9dd84c157277
+        set type mac
+        set color 16
+        set macaddr "1E:F5:CF:0D:78:D2" "5c:e9:1e:a4:11:7c" "84:2F:57:3B:64:B6"
+    next
+    edit "Leandro Financeiro"
+        set uuid e1cc4452-1f8b-51f0-2e11-74a8b3fa335c
+        set type mac
+        set color 16
+        set macaddr "C8:15:4E:27:D8:41" "DC:95:66:81:38:80"
+    next
+    edit "Café"
+        set uuid 2700e16c-1fba-51f0-f173-d33f648fde3c
+        set type mac
+        set color 16
+        set macaddr "D0:94:66:C1:7B:7A" "5C:CD:5B:7E:06:67" "60:68:4E:7A:6E:74"
+    next
+    edit "Aline Perreira"
+        set uuid 9490e914-1fbc-51f0-0103-0e9a00ad2aa4
+        set type mac
+        set color 10
+        set macaddr "78:2B:CB:BC:F2:AA"
+    next
+    edit "Emely"
+        set uuid 18464b8c-1fbd-51f0-c5cf-77b8814c4bbe
+        set type mac
+        set color 10
+        set macaddr "74:86:7A:FB:A3:77"
+    next
+    edit "Ivan"
+        set uuid 769d73c2-1fbd-51f0-a280-d7498e123ccf
+        set type mac
+        set color 10
+        set macaddr "34:E6:D7:FC:5B:31"
+    next
+    edit "Greciel"
+        set uuid bc6540ce-1fbd-51f0-6481-c2618b5c7fc7
+        set type mac
+        set color 10
+        set macaddr "74:86:7A:FB:DE:80"
+    next
+    edit "Mirelle"
+        set uuid 28af67a0-1fbe-51f0-fa98-42d4402a5139
+        set type mac
+        set color 10
+        set macaddr "74:86:7A:FC:53:68"
+    next
+    edit "Bianca"
+        set uuid 482567e2-1fbe-51f0-7ca5-60e849cc6914
+        set type mac
+        set color 10
+        set macaddr "78:2B:CB:BC:1A:C1" "60:57:C8:3F:5F:15"
+    next
+    edit "Narciso"
+        set uuid b1f7bd0a-1fbe-51f0-32df-961cd29f399e
+        set type mac
+        set color 10
+        set macaddr "74:E6:E2:D3:97:75" "cc:eb:5e:82:bb:12" "64:0C:91:67:10:8B"
+    next
+    edit "Debora Moura"
+        set uuid 0857f188-1fbf-51f0-f32a-38c743fb4430
+        set type mac
+        set color 10
+        set macaddr "74:86:7A:FB:31:E0" "E4:84:D3:87:B1:67"
+    next
+    edit "VENDAS_EXT"
+        set uuid 761a332a-1fbf-51f0-a0b7-8105c2796dd7
+        set type mac
+        set color 10
+        set macaddr "90:B1:1C:F7:AE:CA"
+    next
+    edit "Fernando"
+        set uuid f2eec42e-1fbf-51f0-c736-f212cc981788
+        set type mac
+        set color 16
+        set macaddr "64:1C:67:78:76:23" "5C:C5:D4:35:A7:00" "98:D7:42:85:3A:6A"
+    next
+    edit "Cirilo"
+        set uuid b13abf50-1ff2-51f0-ddce-debb7901c70e
+        set type mac
+        set color 16
+        set macaddr "D0:AE:05:EF:39:EE"
+    next
+    edit "Impressora"
+        set uuid eb4193fe-1ff2-51f0-32c4-45084cad3d67
+        set type mac
+        set color 17
+        set macaddr "00:c0:ee:7d:64:7d" "00:c0:ee:7d:65:89" "78:48:59:8c:89:1b" "3c:2a:f4:3a:d9:7d" "dc:c2:c9:1b:dc:cd" "DC:C2:C9:0D:A8:BF"
+    next
+    edit "Câmera-Intelbras"
+        set uuid 2aab58b8-1ff3-51f0-58f6-a79d2d71466b
+        set type mac
+        set color 17
+        set macaddr "80:85:44:67:5a:1d"
+    next
+    edit "web.whatsapp.com"
+        set uuid 53f76ba0-2000-51f0-989e-572aed44f0db
+        set type fqdn
+        set fqdn "web.whatsapp.com"
+    next
+    edit "Pedro Doria"
+        set uuid 8345e376-202f-51f0-2e53-b5251daa1442
+        set type mac
+        set color 23
+        set macaddr "24:B2:B9:0B:10:61" "04:58:5D:20:74:A3" "B8:22:0C:00:E5:F1"
+    next
+    edit "Elber"
+        set uuid acf3bd38-202f-51f0-61fd-2a7f32af1f25
+        set type mac
+        set color 5
+        set macaddr "F6:D5:AC:D8:EE:FF" "D0:94:66:9F:1E:43"
+    next
+    edit "Henzom"
+        set uuid d73e1890-202f-51f0-0320-79dd5d578401
+        set type mac
+        set color 8
+        set macaddr "34:E6:D7:FC:8E:63"
+    next
+    edit "Discord"
+        set uuid 49940fbc-2030-51f0-5634-02b630ac6162
+        set type fqdn
+        set fqdn "*discord*"
+    next
+    edit "RH"
+        set uuid 3d7136d2-2031-51f0-6306-b0ee8c722cfb
+        set type mac
+        set color 32
+        set macaddr "34:E6:D7:FC:7D:86" "98:D7:42:C7:23:46"
+    next
+    edit "ALIF Leandro"
+        set uuid 3cb75b7a-2033-51f0-1694-d6fd6026702a
+        set type mac
+        set color 5
+        set macaddr "C8:15:4E:1C:95:80" "C8:89:F3:6B:28:CA"
+    next
+    edit "Will"
+        set uuid bbf4940c-2033-51f0-469c-bec547c2a99a
+        set type mac
+        set color 32
+        set macaddr "34:E6:D7:FC:D8:F5" "0C:C6:FD:C1:C0:4A"
+    next
+    edit "Vilma"
+        set uuid c9008dbc-2034-51f0-dcef-f663205bc92f
+        set type mac
+        set color 16
+        set macaddr "18:DB:F2:2D:AA:52" "86:63:F9:62:7D:44" "28:59:23:89:21:96" "68:4D:B6:E5:44:A8" "F0:D5:BF:5B:7A:89" "84:9E:56:F8:49:E7" "0A:59:64:7E:85:66"
+    next
+    edit "Nicolas"
+        set uuid 4430f250-2036-51f0-1885-041d215e1f4c
+        set type mac
+        set color 8
+        set macaddr "34:E6:D7:FC:A8:A8" "4C:1D:96:22:DF:03"
+    next
+    edit "Luis Augusto"
+        set uuid 70573ea2-2036-51f0-4d7a-25015727d8ac
+        set type mac
+        set color 25
+        set macaddr "40:FA:FE:58:C4:AB"
+    next
+    edit "Breno"
+        set uuid 8a8804a0-2036-51f0-8e49-2ee2246610e6
+        set type mac
+        set color 25
+        set macaddr "8A:00:2B:D7:E1:73"
+    next
+    edit "Moura"
+        set uuid b03551b8-203a-51f0-5095-88181e7fd385
+        set type mac
+        set color 8
+        set macaddr "84:7B:EB:E7:E2:82"
+    next
+    edit "CGNA 1"
+        set uuid 2622e4f2-203c-51f0-fb00-8f927fd9d5cf
+        set type iprange
+        set start-ip 100.92.0.2
+        set end-ip 100.92.63.254
+    next
+    edit "CGNA 2"
+        set uuid 2dd874e6-203c-51f0-0592-1da7102a44ce
+        set type iprange
+        set start-ip 100.93.0.2
+        set end-ip 100.93.63.254
+    next
+    edit "CGNA 3"
+        set uuid 425f3c74-203c-51f0-8e77-4685b01b934f
+        set type iprange
+        set start-ip 100.97.0.2
+        set end-ip 100.97.63.254
+    next
+    edit "CGNA 4"
+        set uuid 52c15f7a-203c-51f0-127f-d5cc1a62c2ef
+        set type iprange
+        set start-ip 100.97.64.2
+        set end-ip 100.97.127.254
+    next
+    edit "CGNA 5"
+        set uuid 7e63214e-2042-51f0-4156-7b9a78deaa0f
+        set type iprange
+        set start-ip 100.99.0.2
+        set end-ip 100.99.255.253
+    next
+    edit "Amanda"
+        set uuid aec52dc4-204b-51f0-bb00-fb4701e2ec39
+        set type mac
+        set color 10
+        set macaddr "34:E6:D7:FC:D8:54"
+    next
+    edit "Pedro comecial"
+        set uuid d2f815ca-204c-51f0-2655-271dcf88f2fc
+        set type mac
+        set color 10
+        set macaddr "74:86:7A:FB:2F:41"
+    next
+    edit "Kley"
+        set uuid 129409ce-2051-51f0-ed9d-835a79816898
+        set type mac
+        set color 8
+        set macaddr "34:E6:D7:FC:7D:8C"
+    next
+    edit "Jorge"
+        set uuid e9f7f6f8-2058-51f0-9f65-cef140552ef4
+        set type mac
+        set color 8
+        set macaddr "18:A5:9C:B5:9A:51" "2C:15:BF:CB:46:DF"
+    next
+    edit "HBO MAX"
+        set uuid 363d86e4-2069-51f0-7d2c-cab3f17d9d1b
+        set type fqdn
+        set fqdn "www.max.com"
+    next 
+    edit "auth.max.com"
+        set uuid 82f94ad6-2069-51f0-a492-8c5f50181bca
+        set type fqdn
+        set fqdn "auth.max.com"
+    next
+    edit "receita.fazenda"
+        set uuid b0580c84-206d-51f0-cb03-b667ecfd2a23
+        set type fqdn
+        set fqdn "*receita.fazenda.gov.br"
+    next
+    edit "Robsom"
+        set uuid a26a25b4-2070-51f0-f728-7eebe8ccd15f
+        set type mac
+        set color 25
+        set macaddr "74:38:22:08:CE:7A"
+    next
+    edit "Fortigate"
+        set uuid e0cd66ec-2e79-51f0-c0a9-8c2c2bcfb859
+        set type mac
+        set color 17
+        set macaddr "78:18:ec:11:7d:b2"
+    next
+    edit "Vinicius"
+        set uuid 5a755234-2f1f-51f0-8c07-916e73f9e79e
+        set type mac
+        set color 16
+        set macaddr "B6:C4:7B:B7:C7:F8" "B8:1E:A4:1D:48:7D" "28:C2:1F:54:BF:F3" "F8:DA:0C:24:0C:89" "CC:27:46:E4:5C:D9"
+    next
+    edit "Diego"
+        set uuid 34652f00-2f20-51f0-9d32-92a6efca8709
+        set type mac
+        set color 16
+        set macaddr "6C:F7:84:23:69:8A" "DC:21:5C:F4:1B:E0" "70:69:79:A7:45:AC" "20:99:52:FB:50:64"
+    next
+    edit "Pollyanna"
+        set uuid 03c2ab1e-2f22-51f0-c9c2-49e334451030
+        set type mac
+        set color 32
+        set macaddr "6E:8E:3C:02:FF:AF" "8C:AD:48:19:47:E6" "FC:D2:02:29:CC:07"
+    next
+    edit "Ivane"
+        set uuid 08f78e74-2f27-51f0-9bf7-988eff5e2b46
+        set type mac
+        set color 16
+        set macaddr "D0:AB:D5:52:7E:8E" "52:21:AC:48:D5:55"
+    next
+    edit "update.fortiguard.net"
+        set uuid 2cbe4578-2f2c-51f0-521c-a5daddebd246
+        set type fqdn
+        set fqdn "update.fortiguard.net"
+    next
+    edit "service.fortiguard.net"
+        set uuid 7e512950-2f2c-51f0-998a-1ec881b531ca
+        set type fqdn
+        set fqdn "service.fortiguard.net"
+    next
+    edit "directregistration.fortinet.com"
+        set uuid cf2c9012-2f2c-51f0-2f84-ea2295dc8879
+        set type fqdn
+        set fqdn "directregistration.fortinet.com"
+    next
+    edit "PC-TESTE"
+        set uuid 0f6e0788-4ab6-51f0-72d9-4e745f8a94c4
+        set type mac
+        set macaddr "D0:94:66:9F:20:0E" "EC:74:D7:26:9C:10"
+    next
+    edit "Dinatto"
+        set uuid f3aa4b8c-4e17-51f0-1cf6-e279708782ab
+        set type mac
+        set color 8
+        set macaddr "34:E6:D7:FC:D9:8D"
+    next
+    edit "Putti"
+        set uuid 4dd1a2bc-5030-51f0-751d-e43fc1886ebc
+        set type mac
+        set color 8
+        set macaddr "34:E6:D7:FC:85:75"
+    next
+    edit "Ray"
+        set uuid 72659bce-5030-51f0-8205-cc4b2b99806d
+        set type mac
+        set color 8
+        set macaddr "78:2B:CB:BC:7A:61"
+    next
+    edit "Wendel"
+        set uuid 87b865ec-5030-51f0-538a-62501130d6e9
+        set type mac
+        set color 8
+        set macaddr "74:86:7A:FB:2C:53"
+    next
+    edit "Pedro Lucca"
+        set uuid b94398ac-5030-51f0-d3da-ed21573f80c6
+        set type mac
+        set color 8
+        set macaddr "34:E6:D7:FC:60:18"
+    next
+    edit "Wesley"
+        set uuid 04e8cf20-5031-51f0-ddb7-c14e7d23bd03
+        set type mac
+        set color 8
+        set macaddr "78:2B:CB:C4:A5:6F"
+    next
+    edit "Thais"
+        set uuid 15da9ea8-5031-51f0-4e3c-64537277869d
+        set type mac
+        set color 8
+        set macaddr "F8:B1:56:FC:FE:56" "98:D7:42:E0:9E:3A"
+    next
+    edit "Vitor Rosa"
+        set uuid 2753678c-5031-51f0-c5e4-675e28ec78e6
+        set type mac
+        set color 8
+        set macaddr "34:E6:D7:FC:5B:DE"
+    next 
+    edit "Bruna"
+        set uuid 87879ce0-5031-51f0-88b0-7460fbaf46a6
+        set type mac
+        set color 8
+        set macaddr "74:86:7A:FB:05:6C"
+    next
+    edit "Renato"
+        set uuid f94cef0e-534e-51f0-515c-e5cdaf30d9fb
+        set type mac
+        set color 16
+        set macaddr "12:8F:C5:04:F5:69" "FC:18:3C:47:55:E7" "F8:C3:CC:27:A7:C3" "A4:4E:31:68:F1:2C"
+    next
+    edit "Deco"
+        set uuid 986a2b0a-5355-51f0-950f-cb78043eb8b1
+        set type mac
+        set color 16
+        set macaddr "FE:43:2D:83:BA:57" "14:49:D4:F4:A2:15" "5C:CD:5B:80:6E:2F" "D0:94:66:C4:B6:A6"
+    next
+    edit "Victhor"
+        set uuid 6de9919e-5356-51f0-6601-cc4f452a2fa6
+        set type mac
+        set color 23
+        set macaddr "76:F2:06:0F:3C:31"
+    next
+    edit "Cau"
+        set uuid 65661970-5743-51f0-20e1-cf623901ae8b
+        set type mac
+        set color 16
+        set macaddr "38:00:25:1D:53:17" "32:44:ED:9C:6A:AD" "28:8E:EC:D7:2E:BD" "80:96:98:62:AC:8E"
+    next
+    edit "Marcelo"
+        set uuid 631c547e-5c0a-51f0-6968-dfde8186ce2b
+        set type mac
+        set color 16
+        set macaddr "0C:07:DF:09:86:FD" "4C:1D:96:23:0A:F0"
+    next
+    edit "Fernando Financeiro"
+        set uuid e6e2b93e-623f-51f0-18c3-7e1d7dac9b2a
+        set type mac
+        set color 16
+        set macaddr "A4:63:A1:24:2B:BE" "08:97:98:68:5C:9B"
+    next
+    edit "Roberto-comercial"
+        set uuid 5f1ed56e-663b-51f0-7caa-cccdfcd15309
+        set type mac
+        set color 10
+        set macaddr "70:32:17:16:F1:07"
+    next
+    edit "Rony"
+        set uuid 0dc6a414-68af-51f0-4f14-1747cf7f55be
+        set type mac
+        set color 16
+        set macaddr "60:FD:A6:3F:11:E7" "54:13:79:EC:E3:B7"
+    next
+    edit "Visitante"
+        set uuid 52127962-68b5-51f0-2713-d238751bc549
+        set type mac
+        set color 16
+        set macaddr "78:46:5C:18:EB:E1" "5C:CD:5B:19:A5:F0" "9C:60:76:7F:2A:0D" "00:24:D7:36:D9:B0" "24:D3:37:42:F3:A1"
+    next
+    edit "Wesley LINK"
+        set uuid 3834d556-7208-51f0-22ba-5feac2d6c9d3
+        set type mac
+        set color 16
+        set macaddr "5C:CD:5B:19:A5:F0" "18:E7:B0:E8:13:EF"
+    next
+    edit "RH-Gezebel Santos"
+        set uuid b64cb934-7381-51f0-c0e4-b22bd08422c5
+        set type mac
+        set color 32
+        set macaddr "88:1E:5A:DB:0B:A7" "64:49:7D:E1:FC:CB" "DE:CB:8A:DD:F3:78" "4C:63:71:86:A2:D1"
+    next
+    edit "ISBELA"
+        set uuid b695403a-9ec6-51f0-afc6-d6dc8fb8a027
+        set type mac
+        set color 9
+        set macaddr "94:D3:31:A1:97:FE"
+    next
+    edit "CASSIANO JOVEM"
+        set uuid 10440d64-9ec7-51f0-53f6-993e357c8178
+        set type mac
+        set color 32
+        set macaddr "74:38:22:DE:4B:34"
+    next
+    edit "KAUA JOVEM"
+        set uuid 895b4cce-9ef6-51f0-35fa-f56933ff8671
+        set type mac
+        set color 32
+        set macaddr "d4:5b:51:a3:87:91"
+    next
+    edit "Isabella Victoria"
+        set uuid a340d6f4-9ef6-51f0-cb83-74582172f373
+        set type mac
+        set color 8
+        set macaddr "7A:86:97:51:F7:1B"
+    next
+    edit "Patricia"
+        set uuid 15df0872-a2b5-51f0-8cf6-c2a8a5c14630
+        set type mac
+        set color 15
+        set macaddr "70:32:17:35:89:55"
+    next
+    edit "Aparelhos Pesquisa Satisfação"
+        set uuid 11c7456c-af74-51f0-adba-02afc8a32cb5
+        set type mac
+        set color 2
+        set macaddr "E8:5A:8B:B4:21:22" "4C:02:20:F8:55:26" "1C:CC:D6:0E:6A:1F"
+    next
+    edit "Notebook-TESTE"
+        set uuid 2c0a405e-b4c5-51f0-798f-d5e5cbba5a24
+        set type mac
+        set macaddr "10:91:D1:28:CB:A7"
+    next
+    edit "Alef Hotencio"
+        set uuid bff74728-be32-51f0-23fe-d2eb9605c5d4
+        set type mac
+        set color 8
+        set macaddr "94:8B:93:F8:70:BA"
+    next
+    edit "Gerador"
+        set uuid 5a928186-d606-51f0-73b4-cfff539edb59
+        set type mac
+        set macaddr "90:2C:09:39:6C:7A"
+    next
+    edit "Cartola"
+        set uuid 8fde4cb2-e4b6-51f0-1b18-cfc60ee663f8
+        set type fqdn
+        set fqdn "*cartola.globo.com"
+    next
+    edit "Ge.globo"
+        set uuid 258e405a-e4b7-51f0-de96-2fa41d500cb8
+        set type fqdn
+        set fqdn "*ge.globo.com"
+    next
+    edit "VIGI NVR4064H"
+        set uuid 3597d784-e4eb-51f0-e09f-8dc8c69b5a98
+        set type mac
+        set color 17
+        set macaddr "a8:29:48:bf:f1:c1"
+    next
+end

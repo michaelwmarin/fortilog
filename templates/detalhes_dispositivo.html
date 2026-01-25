@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="mb-4">
+    <a href="{{ url_for('logs_view') }}" class="btn btn-sm btn-outline-secondary mb-3">Voltar</a>
+    <div class="d-flex align-items-center gap-3">
+        <div class="bg-primary text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 50px; height: 50px;">
+            <i class="bi bi-pc-display fs-4"></i>
+        </div>
+        <div>
+            <h4 class="mb-0 fw-bold">{{ info.nome }}</h4>
+            <small class="text-muted">MAC: {{ info.mac }} | IP: {{ info.ip }}</small>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm p-3 text-center">
+            <div class="text-muted small fw-bold">TOTAL ACESSOS</div>
+            <h3 class="mb-0">{{ info.total_con }}</h3>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm p-3 text-center border-start border-success border-4">
+            <div class="text-success small fw-bold">PERMITIDOS</div>
+            <h3 class="mb-0">{{ info.permitidos }}</h3>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm p-3 text-center border-start border-danger border-4">
+            <div class="text-danger small fw-bold">BLOQUEADOS</div>
+            <h3 class="mb-0">{{ info.bloqueados }}</h3>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-md-4">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white fw-bold">Top 10 Sites</div>
+            <div class="list-group list-group-flush small">
+                {% for site, count in destinos %}
+                <div class="list-group-item d-flex justify-content-between">
+                    <span class="text-truncate" style="max-width: 150px;">{{ site }}</span>
+                    <span class="badge bg-light text-dark">{{ count }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm">
+            <div class="card-header bg-white fw-bold">Histórico Recente</div>
+            <div class="table-responsive">
+                <table class="table table-sm small mb-0">
+                    <thead><tr><th>Hora</th><th>Destino</th><th>Status</th></tr></thead>
+                    <tbody>
+                        {% for l in logs[:50] %}
+                        <tr>
+                            <td>{{ l.hora[11:] }}</td>
+                            <td>{{ l.destino }}</td>
+                            <td>{{ l.status_cat }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
