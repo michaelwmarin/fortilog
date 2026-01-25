@@ -14,6 +14,8 @@ import urllib.request
 import urllib.parse
 import glob
 from datetime import datetime
+from dotenv import load_dotenv
+load_dotenv()
 from collections import Counter, deque
 from flask import Flask, render_template, request, session, redirect, url_for, jsonify, make_response
 
@@ -41,8 +43,7 @@ NETS_FILE = os.path.join(DATA_DIR, 'networks.json')
 ALERTS_CONFIG_FILE = os.path.join(DATA_DIR, 'alerts_config.json')
 ALERTS_LOG_FILE = os.path.join(DATA_DIR, 'alerts_log.json')
 
-TG_TOKEN = "8251805895:AAE-8kQqzIlCPO_TGZeIUpD-1hHL04g9EM8"
-TG_CHAT_ID_DEFAULT = "6006000366" 
+TOKEN = os.getenv("TG_TOKEN")
 
 GLOBAL_ALERTS_STATE = {"count": 0, "messages": []}
 
