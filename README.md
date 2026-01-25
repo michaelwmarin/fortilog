@@ -20,6 +20,14 @@ Analisar arquivos de logs de rede com milhões de linhas diretamente no Excel é
 * **Frontend**: HTML5, CSS3 (Bootstrap 5) e JavaScript (AJAX para Live Update).
 * **Análise de Dados**: Regex avançado para parsing de logs do FortiOS.
 
+## 📸 Demonstração do Dashboard
+
+| ⚡ Monitoramento em Tempo Real | 📋 Relatórios Históricos |
+|---|---|
+| ![Tempo Real](screenshots/realtime.png) | ![Relatórios](screenshots/report.png) |
+
+---
+
 ## 💻 Como Instalar e Rodar
 
 1. **Clone o repositório:**
