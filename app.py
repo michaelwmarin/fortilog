@@ -43,7 +43,8 @@ NETS_FILE = os.path.join(DATA_DIR, 'networks.json')
 ALERTS_CONFIG_FILE = os.path.join(DATA_DIR, 'alerts_config.json')
 ALERTS_LOG_FILE = os.path.join(DATA_DIR, 'alerts_log.json')
 
-TOKEN = os.getenv("TG_TOKEN")
+TG_TOKEN = os.getenv("TG_TOKEN")
+TG_CHAT_ID_DEFAULT = os.getenv("TG_CHAT_ID")
 
 GLOBAL_ALERTS_STATE = {"count": 0, "messages": []}
 
