@@ -12,186 +12,52 @@
             --header-height: 60px;
             --primary-color: #2c3e50;
             --accent-color: #0d6efd;
-            
-            /* --- TEMA CLARO --- */
             --bg-body: #f4f6f9;
             --card-bg: #ffffff;
             --text-main: #343a40;
             --sidebar-bg: #212529;
         }
-        
-        body {
-            background-color: var(--bg-body);
-            color: var(--text-main);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            overflow-x: hidden;
-            padding-top: var(--header-height);
-        }
-
-        h1, h2, h3, h4, h5, h6, .h1, .h2, .h3, .h4, .h5, .h6 {
-            color: #212529 !important;
-            font-weight: 600;
-        }
-        .text-muted { color: #6c757d !important; }
-        
-        .card {
-            background-color: var(--card-bg) !important;
-            color: var(--text-main) !important;
-            border: none;
-            border-radius: 8px;
-            box-shadow: 0 0 15px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
-        }
-        .card-header {
-            background-color: #fff !important;
-            border-bottom: 1px solid #eee !important;
-            color: #212529 !important;
-            font-weight: 700;
-            padding: 15px 20px;
-        }
-
-        /* --- HEADER (Topo) --- */
-        .top-header {
-            height: var(--header-height);
-            background-color: var(--sidebar-bg);
-            border-bottom: 1px solid #2d3035;
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1001;
-            display: flex;
-            align-items: center;
-            padding: 0 20px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        .btn-toggle-menu {
-            background: transparent;
-            border: none;
-            color: #fff;
-            font-size: 1.5rem;
-            cursor: pointer;
-            margin-right: 15px;
-        }
-
-        .brand-text {
-            font-size: 1.25rem;
-            font-weight: 700;
-            color: #fff;
-        }
-
-        /* --- SIDEBAR --- */
-        .sidebar {
-            height: 100vh;
-            width: var(--sidebar-width);
-            position: fixed;
-            top: var(--header-height);
-            left: 0;
-            background-color: var(--sidebar-bg);
-            border-right: 1px solid #2d3035;
-            display: flex;
-            flex-direction: column;
-            z-index: 1000;
-            transition: transform 0.3s ease-in-out;
-            padding-bottom: var(--header-height);
-        }
-
+        body { background-color: var(--bg-body); color: var(--text-main); font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; overflow-x: hidden; padding-top: var(--header-height); }
+        .card { background-color: var(--card-bg) !important; border: none; border-radius: 8px; box-shadow: 0 0 15px rgba(0,0,0,0.05); margin-bottom: 20px; }
+        .card-header { background-color: #fff !important; border-bottom: 1px solid #eee !important; color: #212529 !important; font-weight: 700; padding: 15px 20px; }
+        .top-header { height: var(--header-height); background-color: var(--sidebar-bg); border-bottom: 1px solid #2d3035; position: fixed; top: 0; left: 0; right: 0; z-index: 1001; display: flex; align-items: center; padding: 0 20px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
+        .btn-toggle-menu { background: transparent; border: none; color: #fff; font-size: 1.5rem; cursor: pointer; margin-right: 15px; }
+        .brand-text { font-size: 1.25rem; font-weight: 700; color: #fff; }
+        .sidebar { height: 100vh; width: var(--sidebar-width); position: fixed; top: var(--header-height); left: 0; background-color: var(--sidebar-bg); border-right: 1px solid #2d3035; display: flex; flex-direction: column; z-index: 1000; transition: transform 0.3s ease-in-out; padding-bottom: var(--header-height); }
         .sidebar.closed { transform: translateX(-100%); }
         .sidebar-menu { flex-grow: 1; overflow-y: auto; padding: 15px 10px; }
-
-        .sidebar-heading {
-            font-size: 0.75rem;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            color: #adb5bd;
-            opacity: 0.6;
-            margin-top: 20px;
-            margin-bottom: 8px;
-            padding-left: 15px;
-            font-weight: 700;
-        }
-
-        .nav-link {
-            color: #ced4da;
-            padding: 10px 15px;
-            border-radius: 6px;
-            margin-bottom: 2px;
-            display: flex;
-            align-items: center;
-            font-size: 0.95rem;
-            text-decoration: none;
-            transition: all 0.2s;
-        }
+        .sidebar-heading { font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; color: #adb5bd; opacity: 0.6; margin-top: 20px; margin-bottom: 8px; padding-left: 15px; font-weight: 700; }
+        .nav-link { color: #ced4da; padding: 10px 15px; border-radius: 6px; margin-bottom: 2px; display: flex; align-items: center; font-size: 0.95rem; text-decoration: none; transition: all 0.2s; }
         .nav-link:hover { background-color: rgba(255,255,255,0.1); color: #fff; }
-        .nav-link.active {
-            background-color: var(--accent-color);
-            color: #fff;
-            font-weight: 600;
-        }
+        .nav-link.active { background-color: var(--accent-color); color: #fff; font-weight: 600; }
         .nav-link i { margin-right: 12px; font-size: 1.1rem; width: 20px; text-align: center; }
-
-        .sidebar-footer {
-            padding: 15px 20px;
-            border-top: 1px solid #343a40;
-            background-color: #1c1f23;
-        }
-        .btn-logout {
-            color: #ff6b6b;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            font-weight: 500;
-        }
-
-        .main-content {
-            margin-left: var(--sidebar-width);
-            padding: 25px;
-            transition: margin-left 0.3s ease-in-out;
-        }
+        .sidebar-footer { padding: 15px 20px; border-top: 1px solid #343a40; background-color: #1c1f23; }
+        .btn-logout { color: #ff6b6b; text-decoration: none; display: flex; align-items: center; font-weight: 500; }
+        .main-content { margin-left: var(--sidebar-width); padding: 25px; transition: margin-left 0.3s ease-in-out; }
         .main-content.expanded { margin-left: 0; }
-        
-        canvas {
-            max-width: 100% !important;
-            max-height: 400px !important;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar { transform: translateX(-100%); }
-            .sidebar.open { transform: translateX(0); }
-            .main-content { margin-left: 0; }
-        }
+        canvas { max-width: 100% !important; max-height: 400px !important; }
+        @media (max-width: 768px) { .sidebar { transform: translateX(-100%); } .sidebar.open { transform: translateX(0); } .main-content { margin-left: 0; } }
     </style>
 </head>
 <body>
-
     <header class="top-header">
         <div class="d-flex align-items-center">
             <button class="btn-toggle-menu" onclick="toggleSidebar()">
                 <i class="bi bi-list"></i>
             </button>
             <div class="brand-text">
-                <i class="bi bi-shield-check text-primary me-2"></i> FortiLog Logs
+                <i class="bi bi-shield-check text-primary me-2"></i> FortiLog
             </div>
         </div>
-
         <div class="ms-auto d-flex align-items-center text-white">
-            
             <div class="me-4 text-end d-none d-md-block">
                 <div id="clock-time" class="fw-bold" style="font-size: 1.1rem; line-height: 1;">--:--:--</div>
-                <div id="clock-date" class="text-secondary" style="font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px;">--/--/----</div>
+                <div id="clock-date" class="text-secondary" style="font-size: 0.75rem; text-transform: uppercase;">--/--/----</div>
             </div>
-
-            <div class="border-start border-secondary h-100 mx-2" style="height: 30px; opacity: 0.3;"></div>
-
             <div class="d-flex align-items-center ps-2">
                 <div class="text-end me-3">
-                    <div class="fw-bold text-uppercase" style="font-size: 0.9rem;">
-                        {{ session.get('usuario', 'Admin') }}
-                    </div>
-                    <div class="text-success small" style="font-size: 0.75rem;">
-                        <i class="bi bi-broadcast-pin me-1"></i>IP: {{ request.remote_addr }}
-                    </div>
+                    <div class="fw-bold text-uppercase" style="font-size: 0.9rem;">{{ session.get('usuario', 'Admin') }}</div>
+                    <div class="text-success small" style="font-size: 0.75rem;">Online</div>
                 </div>
                 <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 40px; height: 40px;">
                     <i class="bi bi-person-fill fs-5"></i>
@@ -202,14 +68,18 @@
 
     <nav class="sidebar" id="sidebar">
         <div class="sidebar-menu nav flex-column">
+            
             <div class="sidebar-heading">Monitoramento</div>
             <a href="{{ url_for('dashboard') }}" class="nav-link {% if request.endpoint == 'dashboard' %}active{% endif %}">
                 <i class="bi bi-speedometer2"></i> Visão Geral
             </a>
-            <a href="{{ url_for('logs_view') }}" class="nav-link {% if request.endpoint == 'logs_view' %}active{% endif %}">
-                <i class="bi bi-list-ul"></i> Logs em Tempo Real
+            
+            <a href="{{ url_for('logs_realtime') }}" class="nav-link {% if request.endpoint == 'logs_realtime' %}active{% endif %}">
+                <i class="bi bi-activity"></i> Logs Tempo Real
             </a>
-
+            <a href="{{ url_for('logs_relatorio') }}" class="nav-link {% if request.endpoint == 'logs_relatorio' %}active{% endif %}">
+                <i class="bi bi-calendar-range"></i> Relatório Histórico
+            </a>
             <div class="sidebar-heading">Gerenciamento</div>
             <a href="{{ url_for('dispositivos') }}" class="nav-link {% if request.endpoint == 'dispositivos' %}active{% endif %}">
                 <i class="bi bi-pc-display"></i> Dispositivos
@@ -232,9 +102,7 @@
             {% endif %}
         </div>
         <div class="sidebar-footer">
-            <a href="{{ url_for('logout') }}" class="btn-logout">
-                <i class="bi bi-box-arrow-left me-2"></i> Sair
-            </a>
+            <a href="{{ url_for('logout') }}" class="btn-logout"><i class="bi bi-box-arrow-left me-2"></i> Sair</a>
         </div>
     </nav>
 
@@ -249,9 +117,7 @@
             {% endfor %}
           {% endif %}
         {% endwith %}
-
         {% block content %}{% endblock %}
-        
         <div class="text-center text-muted mt-5 mb-3 small">
             <hr>
             FortiLog Log Monitor &copy; 2026 | Servidor: {{ sys_info.hostname }}
@@ -260,33 +126,20 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
     <script>
-        // Função do Menu Sanduíche
         function toggleSidebar() {
             const sidebar = document.getElementById('sidebar');
             const content = document.getElementById('main-content');
-            if (window.innerWidth <= 768) {
-                sidebar.classList.toggle('open');
-            } else {
-                sidebar.classList.toggle('closed');
-                content.classList.toggle('expanded');
-            }
+            if (window.innerWidth <= 768) { sidebar.classList.toggle('open'); } 
+            else { sidebar.classList.toggle('closed'); content.classList.toggle('expanded'); }
         }
-
-        // Função do Relógio Digital
         function updateClock() {
             const now = new Date();
-            const timeString = now.toLocaleTimeString('pt-BR');
-            const dateString = now.toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric', month: 'short' });
-            
-            document.getElementById('clock-time').textContent = timeString;
-            document.getElementById('clock-date').textContent = dateString;
+            document.getElementById('clock-time').textContent = now.toLocaleTimeString('pt-BR');
+            document.getElementById('clock-date').textContent = now.toLocaleDateString('pt-BR', { weekday: 'short', day: 'numeric', month: 'short' });
         }
-        setInterval(updateClock, 1000);
-        updateClock(); // Iniciar imediatamente
+        setInterval(updateClock, 1000); updateClock();
     </script>
-
     {% block scripts %}{% endblock %}
 </body>
 </html>
