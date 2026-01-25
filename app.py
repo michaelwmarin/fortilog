@@ -125,15 +125,7 @@ def detect_vendor(src_nome, os_nome):
     return 'Outros'
 
 def resolve_hostname(ip):
-    if ip in DNS_CACHE: return DNS_CACHE[ip]
-    try:
-        socket.setdefaulttimeout(0.2)
-        name, _, _ = socket.gethostbyaddr(ip)
-        DNS_CACHE[ip] = name
-        return name
-    except:
-        DNS_CACHE[ip] = None
-        return None
+    return None
 
 def identificar_nome(d, line, macs_db, nets_db, raw_os, raw_srcname):
     ip_clean = d['ip'].strip()
@@ -513,5 +505,4 @@ def api_stats():
     return jsonify(data)
 
 if __name__ == '__main__':
-    # Permite acesso externo (útil para acessar o WSL pelo Windows)
     app.run(host='0.0.0.0', port=5000, debug=True)

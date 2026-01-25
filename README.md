@@ -1,63 +1,85 @@
-# 🛡️ FortiLog Dashboard
+# 🛡️ FortiLog - Dashboard de Monitoramento para FortiGate
 
-[![Python](https://img.shields.io/badge/Python-3.8+-blue.svg)](https://www.python.org/)
-[![Flask](https://img.shields.io/badge/Flask-3.0-green.svg)](https://flask.palletsprojects.com/)
-[![License](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
+![Flask](https://img.shields.io/badge/Flask-2.0%2B-green)
+![Status](https://img.shields.io/badge/Status-Stable-brightgreen)
 
-> Dashboard inteligente para monitoramento e auditoria de tráfego em Firewalls FortiGate.
+O **FortiLog** é uma solução de monitoramento em tempo real projetada para processar logs de firewalls FortiGate. Ele oferece uma interface visual intuitiva para analisar tráfego, identificar ameaças e monitorar a saúde do servidor (CPU/Memória).
 
-## 🚀 O Problema & A Solução
-Analisar arquivos de logs de rede com milhões de linhas diretamente no Excel é lento e ineficiente. O **FortiLog** resolve isso processando os logs diretamente no servidor e entregando uma interface web leve e rápida, separando o tráfego em tempo real das buscas históricas.
+## 🚀 Funcionalidades
 
-## ✨ Principais Funcionalidades
-* **⚡ Live View**: Monitoramento contínuo das últimas 24h de tráfego.
-* **📂 Auditoria Histórica**: Filtros precisos por Data e Hora para encontrar incidentes específicos.
-* **🧹 Smart Cleaning**: Remove automaticamente ruídos de infraestrutura (como tráfego de gerência de roteadores Huawei) para focar no tráfego dos usuários.
-* **🔍 Identificação Amigável**: Traduz endereços MAC e IPs para nomes de funcionários e departamentos.
+* **Monitoramento em Tempo Real**: Visualização de logs de tráfego conforme eles chegam via Syslog/Tail.
+* **Identificação Inteligente**: Reconhecimento automático de dispositivos (Apple, Windows, Android) e fabricantes.
+* **Geolocalização**: Identificação de países de destino do tráfego.
+* **Alertas via Telegram**: Notificações automáticas para picos de CPU ou falhas de login SSH.
+* **Histórico de Performance**: Gráficos de consumo de recursos do servidor.
 
 ## 🛠️ Tecnologias Utilizadas
-* **Backend**: Python com Flask (Processamento de Shell Scripts via subprocess).
-* **Frontend**: HTML5, CSS3 (Bootstrap 5) e JavaScript (AJAX para Live Update).
-* **Análise de Dados**: Regex avançado para parsing de logs do FortiOS.
 
-## 📸 Demonstração do Dashboard
+* **Backend**: Python 3, Flask
+* **Frontend**: HTML5, CSS3, Bootstrap Icons, Chart.js
+* **Sistema**: Otimizado para Linux (Debian/Ubuntu) e WSL.
+* **Automação**: GitHub Actions (CI/CD Pipeline).
 
-| ⚡ Monitoramento em Tempo Real | 📋 Relatórios Históricos |
-|---|---|
-| ![Tempo Real](screenshots/realtime.png) | ![Relatórios](screenshots/report.png) |
+## 📸 Visão Geral
+![Dashboard Principal](screenshots/dashboardp1.png)
+
+![Dashboard Principal](screenshots/dashboardp2.png)
+
+## 🚀 Funcionalidades
+* **Monitoramento em Tempo Real**: Visualização de logs de tráfego conforme eles chegam.
+* **Identificação Inteligente**: Reconhecimento automático de fabricantes (Apple, Samsung, Intelbras).
+* **Alertas**: Notificações automáticas para picos de tráfego ou bloqueios massivos.
+* **Gestão de Dispositivos**: Mapeamento de MAC Address para nomes amigáveis.
+
+## 🖼️ Galeria
+
+### Logs Detalhados
+![Logs](screenshots/logs.png)
+
+### Configuração de Alertas
+![Alertas](screenshots/alertas.png)
+
+### User Detalhados
+![Logs](screenshots/user.png)
+
+### MAC Detalhados
+![Logs](screenshots/mac.png)
+
+### Destinos Detalhados
+![Logs](screenshots/destinos.png)
+
+## ⚙️ Instalação e Execução (WSL/Linux)
+
+1.  **Clone o repositório:**
+    ```bash
+    git clone [https://github.com/michaelwmarin/fortilog.git](https://github.com/michaelwmarin/fortilog.git)
+    cd fortilog
+    ```
+
+2.  **Configure o ambiente:**
+    Crie um arquivo `.env` na raiz do projeto:
+    ```ini
+    LOG_PATH=/opt/fortilog/logs/fortigate.log
+    # Para usar dados de teste, descomente as linhas abaixo no código ou aponte para os arquivos _sample.json
+    ```
+
+3.  **Instale as dependências:**
+    ```bash
+    pip install flask psutil python-dotenv
+    ```
+
+4.  **Execute:**
+    ```bash
+    python3 app.py
+    ```
+
+5.  **Acesse:**
+    Abra o navegador em `http://127.0.0.1:5000`
+
+## 📸 Screenshots
+
+*(Adicione prints do seu dashboard aqui depois)*
 
 ---
-
-## 💻 Como Instalar e Rodar
-
-1. **Clone o repositório:**
-   ```bash
-   git clone [https://github.com/michaelwmarin/fortilog.git](https://github.com/michaelwmarin/fortilog.git)
-   cd fortilog
-
-   ```
-
-2. **Instale as dependências:**
-   ```bash
-   pip install -r requirements.txt
-
-   ```
-
-
-3. **Configure seus dados:**
-* Vá na pasta `data/` e renomeie os arquivos `_sample.json` para `.json`.
-* Adicione seus endereços MAC e nomes de servidores.
-
-
-4. **Inicie o Dashboard:**
-   ```bash
-   python app.py
-
-   ```
-
-
-Acesse em: `http://localhost:5000`
-
----
-
-🎨 *Projeto desenvolvido por [Michael Marin*](https://www.google.com/search?q=https://github.com/michaelwmarin)
+Desenvolvido por **Michael Marin**

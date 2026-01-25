@@ -6,5 +6,10 @@
         "nome": "TESTE",
         "email": "TESTE@TESTE.COM.BR",
         "group_access": "TODOS"
+    },
+    "FortiLog": {
+        "senha": "@FortiLog191207",
+        "role": "ADM",
+        "telegram": ""
     }
 }
