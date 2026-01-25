@@ -1,19 +1,26 @@
-# Ignorar arquivos de dados reais (Privacidade)
-data/*.json
-!data/servers_sample.json
-!data/macs_sample.json
-!data/servers_file_sample.json
-!data/policies_sample.json
-!data/users_sample.json
-
-# Ignorar logs e arquivos gigantes
-*.csv
-*.log
-*.gz
-*.zip
-
-# Python e Sistema
+# --- Python e Cache (Lixo do sistema) ---
 __pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# --- Ambientes Virtuais ---
 venv/
+.venv/
+env/
+
+# --- Variáveis de Ambiente (SEGURANÇA) ---
+# Ignora o arquivo real com senhas
 .env
+
+# --- IDEs e Sistema Operacional ---
 .vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Logs (Opcional: mantém a pasta logs, mas ignora arquivos txt/log dentro) ---
+logs/*.log
+logs/*.txt
+# Mantém o arquivo .gitkeep se existir para não sumir a pasta
+!logs/.gitkeep
