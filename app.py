@@ -35,10 +35,10 @@ app.secret_key = 'v118_smart_memory_final'
 # ==============================================================================
 # ARQUIVOS
 # ==============================================================================
-USERS_FILE = os.path.join(DATA_DIR, 'users_sample.json')
-SERVERS_FILE = os.path.join(DATA_DIR, 'servers_sample.json')
-MACS_FILE = os.path.join(DATA_DIR, 'macs_sample.json')
-GROUPS_FILE = os.path.join(DATA_DIR, 'groups_sample.json')
+USERS_FILE = os.path.join(DATA_DIR, 'users.json')
+SERVERS_FILE = os.path.join(DATA_DIR, 'servers.json')
+MACS_FILE = os.path.join(DATA_DIR, 'macs.json')
+GROUPS_FILE = os.path.join(DATA_DIR, 'groups.json')
 NETS_FILE = os.path.join(DATA_DIR, 'networks.json')
 ALERTS_CONFIG_FILE = os.path.join(DATA_DIR, 'alerts_config.json')
 ALERTS_LOG_FILE = os.path.join(DATA_DIR, 'alerts_log.json')
@@ -56,7 +56,7 @@ POLITICAS_NOMES = {
 }
 
 USER_GROUPS_LIST = [
-    "Usuario", "SUPORTE", "FINANCEIRO", "USUARIO_EX"
+    "Usuario", "Jovem Aprendiz", "WHATSAPP LIBERADO", "SUPORTE", "FINANCEIRO", "USUARIO_EX"
 ]
 
 # --- MEMÓRIA INTELIGENTE ---
@@ -141,6 +141,7 @@ def identificar_nome(d, line, macs_db, nets_db, raw_os, raw_srcname):
         
     # 2. Infraestrutura
     if ip_clean == "192.168.32.2": return "FortiGate"
+    if ip_clean.startswith("192.168.240."): return "CÂMERAS INTELBRAS"
     
     # 3. Log e Memória
     user_match = re.search(r'user="([^"]+)"', line)
@@ -322,7 +323,7 @@ def check_alerts(cpu):
     except: pass
 
 def data_collector():
-    global CURRENT_STATS
+    global LAST_NET, CURRENT_STATS
     last_history_update = 0
     while True:
         try:

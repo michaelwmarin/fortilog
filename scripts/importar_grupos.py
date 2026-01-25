@@ -6,7 +6,7 @@ import shutil
 # --- CONFIGURAÇÃO ---
 BASE_DIR = '/root/fortilog'
 ARQUIVO_ORIGEM = os.path.join(BASE_DIR, 'backups/fgt_groups.txt')
-ARQUIVO_DESTINO = os.path.join(BASE_DIR, 'data/groups_sample.json')
+ARQUIVO_DESTINO = os.path.join(BASE_DIR, 'data/groups.json')
 
 def carregar_json(fp):
     if not os.path.exists(fp): return {}
@@ -64,7 +64,7 @@ def importar():
 
     if count > 0:
         salvar_json(ARQUIVO_DESTINO, grupos_db)
-        print(f"\nSUCESSO: {count} associações importadas para groups_sample.json!")
+        print(f"\nSUCESSO: {count} associações importadas para groups.json!")
     else:
         print("\nNenhum grupo encontrado.")
 
