@@ -1,29 +1,127 @@
 {% extends "base.html" %}
+
 {% block content %}
 <div class="container-fluid p-4">
-    <h2 class="mb-4">Top Destinos e Serviços</h2>
-    <div class="card shadow-sm">
-        <div class="card-body">
-            <table class="table table-hover align-middle">
-                <thead class="table-light">
-                    <tr><th>Rank</th><th>Destino / Serviço</th><th class="text-end">Acessos</th><th class="text-center">Barra</th></tr>
-                </thead>
-                <tbody>
-                    {% for destino, qtd in top_destinos %}
-                    <tr>
-                        <td class="fw-bold text-muted">#{{ loop.index }}</td>
-                        <td class="fw-bold text-primary">{{ destino }}</td>
-                        <td class="text-end">{{ qtd }}</td>
-                        <td class="text-center" style="width: 30%;">
-                            <div class="progress" style="height: 6px;">
-                                <div class="progress-bar" style="width: {{ (qtd / top_destinos[0][1]) * 100 }}%"></div>
-                            </div>
-                        </td>
-                    </tr>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-0">Destinos e Redes</h2>
+            <p class="text-muted mb-0">Monitoramento de sites acessados e segmentos de rede</p>
+        </div>
+        <div>
+            <button class="btn btn-primary fw-bold shadow-sm me-2" data-bs-toggle="modal" data-bs-target="#modalNovaRede">
+                <i class="bi bi-plus-lg me-2"></i> Nova Rede
+            </button>
+            <button class="btn btn-outline-dark fw-bold shadow-sm">
+                <i class="bi bi-download me-2"></i> Relatório
+            </button>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8 mb-4">
+            <div class="card shadow-sm border-0 rounded-3 h-100">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h6 class="mb-0 fw-bold"><i class="bi bi-globe me-2"></i>Top Destinos (Volume de Acesso)</h6>
+                </div>
+                <div class="card-body p-0">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle mb-0">
+                            <thead class="table-light">
+                                <tr>
+                                    <th class="ps-4">Destino / Site</th>
+                                    <th>Categoria</th>
+                                    <th class="text-end pe-4">Acessos</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for destino, count in top_destinos %}
+                                <tr>
+                                    <td class="ps-4 fw-bold text-dark">{{ destino }}</td>
+                                    <td><span class="badge bg-light text-dark border">Geral</span></td>
+                                    <td class="text-end pe-4">
+                                        <span class="badge bg-primary-subtle text-primary rounded-pill px-3">{{ count }}</span>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr><td colspan="3" class="text-center p-4 text-muted">Sem dados recentes.</td></tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm border-0 rounded-3 h-100">
+                <div class="card-header bg-white py-3 border-bottom">
+                    <h6 class="mb-0 fw-bold"><i class="bi bi-router me-2"></i>Redes Monitoradas</h6>
+                </div>
+                <div class="list-group list-group-flush">
+                    {% for cidr, nome in redes.items() %}
+                    <div class="list-group-item p-3 d-flex justify-content-between align-items-center">
+                        <div>
+                            <small class="text-muted d-block text-uppercase fw-bold" style="font-size: 0.7rem;">{{ nome }}</small>
+                            <span class="fw-bold text-dark font-monospace">{{ cidr }}</span>
+                        </div>
+                        
+                        <form action="{{ url_for('destinos') }}" method="POST" style="display:inline;">
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="cidr" value="{{ cidr }}">
+                            <button type="submit" class="btn btn-sm text-danger opacity-50 hover-opacity-100 border-0 bg-transparent" onclick="return confirm('Remover esta rede da lista?')">
+                                <i class="bi bi-trash fs-5"></i>
+                            </button>
+                        </form>
+                    </div>
+                    {% else %}
+                    <div class="text-center p-4 text-muted">
+                        <i class="bi bi-hdd-network fs-1 opacity-25"></i>
+                        <p class="small mt-2">Nenhuma rede cadastrada.</p>
+                    </div>
                     {% endfor %}
-                </tbody>
-            </table>
+                </div>
+            </div>
         </div>
     </div>
 </div>
+
+<div class="modal fade" id="modalNovaRede" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg">
+            <div class="modal-header border-bottom-0 pb-0">
+                <h5 class="modal-title fw-bold">Cadastrar Rede</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <form method="POST" action="{{ url_for('destinos') }}">
+                    <input type="hidden" name="action" value="add">
+                    
+                    <div class="mb-3">
+                        <label class="form-label small fw-bold text-muted">Nome da Rede</label>
+                        <input type="text" name="nome" class="form-control" placeholder="Ex: Wi-Fi Visitantes" required>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label small fw-bold text-muted">Endereço CIDR / IP</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light"><i class="bi bi-globe"></i></span>
+                            <input type="text" name="cidr" class="form-control font-monospace" placeholder="Ex: 192.168.0.0/24" required>
+                        </div>
+                        <small class="text-muted" style="font-size: 0.75rem;">Use a notação CIDR ou IP único.</small>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary fw-bold py-2">
+                            <i class="bi bi-plus-circle me-2"></i>Adicionar
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .hover-opacity-100:hover { opacity: 1 !important; }
+</style>
 {% endblock %}

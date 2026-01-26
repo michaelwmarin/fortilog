@@ -1,93 +1,121 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container-fluid">
-    <h2 class="fw-bold mb-4">Configuração de Alertas</h2>
+<div class="container-fluid p-4">
+    <h2 class="mb-4 fw-bold text-dark">Configuração de Alertas</h2>
 
     <div class="row">
-        <div class="col-md-5 mb-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white fw-bold"><i class="bi bi-sliders"></i> Preferências</div>
+        <div class="col-lg-4 mb-4">
+            <div class="card shadow-sm h-100 border-0">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h6 class="mb-0 fw-bold"><i class="bi bi-sliders me-2"></i>Preferências</h6>
+                </div>
                 <div class="card-body">
-                    <form method="post">
-                        <div class="form-check form-switch mb-3">
-                            <input class="form-check-input" type="checkbox" name="new_device" id="chkNew" {% if cfg.new_device %}checked{% endif %}>
-                            <label class="form-check-label" for="chkNew">Notificar Novo Dispositivo</label>
-                        </div>
-                        
-                        <hr class="my-4">
-                        
-                        <div class="mb-3">
-                            <div class="form-check form-switch mb-2">
-                                <input class="form-check-input" type="checkbox" name="high_traffic" id="chkTraffic" {% if cfg.high_traffic %}checked{% endif %}>
-                                <label class="form-check-label fw-bold" for="chkTraffic">Alerta de Alto Tráfego</label>
+                    <form method="POST">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <label class="form-check-label fw-bold" for="notifDevice">Notificar Novo Dispositivo</label>
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="notifDevice" checked style="width: 3em; height: 1.5em;">
                             </div>
-                            <div class="input-group">
-                                <span class="input-group-text">Acima de</span>
-                                <input type="number" name="limit_traffic" class="form-control" value="{{ cfg.get('limit_traffic', 20) }}">
-                                <span class="input-group-text">MB/s</span>
-                            </div>
-                            <small class="text-muted">Padrão: 20 MB/s</small>
                         </div>
 
-                        <hr class="my-4">
+                        <hr class="text-muted opacity-25">
 
                         <div class="mb-4">
-                            <div class="form-check form-switch mb-2">
-                                <input class="form-check-input" type="checkbox" name="mass_block" id="chkBlock" {% if cfg.mass_block %}checked{% endif %}>
-                                <label class="form-check-label fw-bold" for="chkBlock">Alerta de Ataque (Bloqueios)</label>
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="fw-bold"><i class="bi bi-toggle-on text-primary me-2"></i>Alerta de Alto Tráfego</label>
                             </div>
-                            <div class="input-group">
-                                <span class="input-group-text">Mais de</span>
-                                <input type="number" name="limit_blocks" class="form-control" value="{{ cfg.get('limit_blocks', 50) }}">
-                                <span class="input-group-text">em 30s</span>
+                            <div class="input-group mb-1">
+                                <span class="input-group-text bg-light border-end-0">Acima de</span>
+                                <input type="number" class="form-control border-start-0 border-end-0 text-center fw-bold" value="20">
+                                <span class="input-group-text bg-light border-start-0">MB/s</span>
                             </div>
-                            <small class="text-muted">Padrão: 50 bloqueios</small>
+                            <small class="text-muted" style="font-size: 0.8rem;">Padrão: 20 MB/s</small>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100"><i class="bi bi-save"></i> Salvar Definições</button>
+                        <hr class="text-muted opacity-25">
+
+                        <div class="mb-4">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="fw-bold text-muted"><i class="bi bi-toggle-off me-2"></i>Alerta de Ataque (Bloqueios)</label>
+                            </div>
+                            <div class="input-group mb-1">
+                                <span class="input-group-text bg-light border-end-0">Mais de</span>
+                                <input type="number" class="form-control border-start-0 border-end-0 text-center fw-bold" value="50" disabled>
+                                <span class="input-group-text bg-light border-start-0">em 30s</span>
+                            </div>
+                            <small class="text-muted" style="font-size: 0.8rem;">Padrão: 50 bloqueios</small>
+                        </div>
+
+                        <div class="d-grid gap-2 mt-5">
+                            <button type="submit" class="btn btn-primary fw-bold py-2">
+                                <i class="bi bi-save me-2"></i>Salvar Definições
+                            </button>
+                            <button type="button" class="btn btn-outline-danger py-2">
+                                <i class="bi bi-trash me-2"></i>Limpar Notificações do Topo
+                            </button>
+                        </div>
                     </form>
-                    
-                    <div class="mt-4 pt-3 border-top">
-                        <button onclick="limparAlertas()" class="btn btn-outline-danger w-100 btn-sm">
-                            <i class="bi bi-trash"></i> Limpar Notificações do Topo
-                        </button>
-                    </div>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-7 mb-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-header bg-white fw-bold"><i class="bi bi-clock-history"></i> Histórico de Incidentes</div>
+        <div class="col-lg-8">
+            <div class="card shadow-sm h-100 border-0">
+                <div class="card-header bg-white border-bottom py-3">
+                    <h6 class="mb-0 fw-bold"><i class="bi bi-clock-history me-2"></i>Histórico de Incidentes</h6>
+                </div>
                 <div class="card-body p-0">
                     <div class="table-responsive">
-                        <table class="table table-hover mb-0 align-middle">
+                        <table class="table table-hover align-middle mb-0">
                             <thead class="table-light">
                                 <tr>
-                                    <th>Data</th>
+                                    <th class="ps-4">Data</th>
                                     <th>Evento</th>
-                                    <th>Categoria</th>
+                                    <th class="text-end pe-4">Categoria</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for h in history %}
                                 <tr>
-                                    <td class="text-muted small text-nowrap">{{ h.data }}</td>
-                                    <td>{{ h.titulo }}</td>
-                                    <td>
-                                        {% if h.categoria == 'mass_block' %}
-                                            <span class="badge bg-danger">Ataque</span>
-                                        {% elif h.categoria == 'high_traffic' %}
-                                            <span class="badge bg-warning text-dark">Tráfego</span>
-                                        {% elif h.categoria == 'new_device' %}
-                                            <span class="badge bg-info text-dark">Novo Device</span>
-                                        {% else %}
-                                            <span class="badge bg-secondary">{{ h.categoria }}</span>
-                                        {% endif %}
-                                    </td>
+                                    <td class="ps-4 text-muted small">06/01 21:08</td>
+                                    <td>Ataque: Muitos Bloqueios</td>
+                                    <td class="text-end pe-4"><span class="badge bg-danger">Ataque</span></td>
                                 </tr>
-                                {% endfor %}
+                                <tr>
+                                    <td class="ps-4 text-muted small">06/01 21:05</td>
+                                    <td>Ataque: Muitos Bloqueios</td>
+                                    <td class="text-end pe-4"><span class="badge bg-danger">Ataque</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4 text-muted small">06/01 21:00</td>
+                                    <td>Ataque: Muitos Bloqueios</td>
+                                    <td class="text-end pe-4"><span class="badge bg-danger">Ataque</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4 text-muted small">06/01 20:58</td>
+                                    <td>Ataque: Muitos Bloqueios</td>
+                                    <td class="text-end pe-4"><span class="badge bg-danger">Ataque</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4 text-muted small">06/01 20:24</td>
+                                    <td>Novo: iPhone-Visitante</td>
+                                    <td class="text-end pe-4"><span class="badge bg-info text-dark">Novo Device</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4 text-muted small">06/01 20:11</td>
+                                    <td>Ataque: Muitos Bloqueios</td>
+                                    <td class="text-end pe-4"><span class="badge bg-danger">Ataque</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4 text-muted small">06/01 19:58</td>
+                                    <td>Novo: Galaxy-S22</td>
+                                    <td class="text-end pe-4"><span class="badge bg-info text-dark">Novo Device</span></td>
+                                </tr>
+                                <tr>
+                                    <td class="ps-4 text-muted small">06/01 19:30</td>
+                                    <td>Serviço Reiniciado</td>
+                                    <td class="text-end pe-4"><span class="badge bg-secondary">Sistema</span></td>
+                                </tr>
                             </tbody>
                         </table>
                     </div>
@@ -96,16 +124,4 @@
         </div>
     </div>
 </div>
-
-<script>
-function limparAlertas() {
-    if(confirm('Limpar alertas do topo da tela?')) {
-        fetch('/api/limpar_alertas', {method: 'POST'})
-        .then(r => r.json())
-        .then(d => {
-            if(d.status === 'ok') location.reload();
-        });
-    }
-}
-</script>
 {% endblock %}
