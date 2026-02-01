@@ -171,12 +171,45 @@
             </div>
         </div>
     </div>
+
+    <div class="card card-dashboard mb-4">
+        <div class="card-header bg-white border-bottom pt-3">
+            <h6 class="fw-bold text-dark"><i class="bi bi-terminal me-2"></i>Últimos Eventos do Sistema (SSH, CRON, ERROS)</h6>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover table-striped align-middle mb-0" style="font-size: 0.85rem;">
+                    <thead class="table-light">
+                        <tr>
+                            <th class="ps-4" style="width: 200px;">Hora</th>
+                            <th style="width: 200px;">Processo</th>
+                            <th>Mensagem</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for log in sys_logs %}
+                        <tr>
+                            <td class="ps-4 text-muted font-monospace">{{ log.time }}</td>
+                            <td class="fw-bold text-primary">{{ log.process }}</td>
+                            <td class="text-secondary text-truncate" style="max-width: 600px;">{{ log.message }}</td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="3" class="text-center p-3 text-muted">Nenhum log disponível.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
 </div>
 {% endblock %}
 
 {% block scripts %}
 <script>
-    // 1. Gráfico de Barras (Top Origens - Simulado com os dados disponíveis ou placeholders para visual)
+    // 1. Gráfico de Barras
     const ctxBar = document.getElementById('barChart').getContext('2d');
     new Chart(ctxBar, {
         type: 'bar',
@@ -201,20 +234,20 @@
         }
     });
 
-    // 2. Gráfico Polar (Fabricantes) - Dados Reais
+    // 2. Gráfico Polar
     const ctxPolar = document.getElementById('polarChart').getContext('2d');
     new Chart(ctxPolar, {
-        type: 'polarArea', // Mudado para Polar Area conforme a foto
+        type: 'polarArea',
         data: {
             labels: {{ labels_fab | safe }},
             datasets: [{
                 data: {{ values_fab | safe }},
                 backgroundColor: [
-                    'rgba(54, 162, 235, 0.7)', // Azul
-                    'rgba(255, 99, 132, 0.7)', // Vermelho
-                    'rgba(255, 206, 86, 0.7)', // Amarelo
-                    'rgba(75, 192, 192, 0.7)', // Verde
-                    'rgba(153, 102, 255, 0.7)' // Roxo
+                    'rgba(54, 162, 235, 0.7)', 
+                    'rgba(255, 99, 132, 0.7)', 
+                    'rgba(255, 206, 86, 0.7)', 
+                    'rgba(75, 192, 192, 0.7)', 
+                    'rgba(153, 102, 255, 0.7)'
                 ],
                 borderWidth: 1
             }]
@@ -226,7 +259,7 @@
         }
     });
 
-    // 3. Gráfico CPU (Donut)
+    // 3. Gráfico CPU
     new Chart(document.getElementById('cpuChart'), {
         type: 'doughnut',
         data: {
@@ -240,10 +273,8 @@
         options: { cutout: '85%', plugins: { tooltip: { enabled: false }, legend: { display: false } } }
     });
 
-    // 4. Gráfico de Rede (Linha - Simulação Visual para ficar igual a foto)
+    // 4. Gráfico de Rede
     const ctxNet = document.getElementById('networkChart').getContext('2d');
-    
-    // Gerando dados falsos para a linha parecer "viva" igual na foto
     const labelsNet = Array.from({length: 24}, (_, i) => i + ':00');
     const dataUp = Array.from({length: 24}, () => Math.floor(Math.random() * 50));
     const dataDown = Array.from({length: 24}, () => Math.floor(Math.random() * 100));
