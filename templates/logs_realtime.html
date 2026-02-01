@@ -4,49 +4,131 @@
 <div class="container-fluid p-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="text-primary fw-bold"><i class="bi bi-activity"></i> Logs em Tempo Real</h2>
-            <p class="text-muted">Exibindo eventos das últimas 24 horas.</p>
+            <h2 class="fw-bold text-dark mb-0">Logs em Tempo Real</h2>
+            <p class="text-muted mb-0">Monitoramento ao vivo das últimas conexões (Últimas 24h)</p>
         </div>
-        <a href="{{ url_for('logs_realtime') }}" class="btn btn-outline-primary">
-            <i class="bi bi-arrow-clockwise"></i> Atualizar Agora
+        <a href="{{ url_for('logs_realtime') }}" class="btn btn-outline-primary btn-sm shadow-sm">
+            <i class="bi bi-arrow-clockwise me-1"></i>Atualizar Agora
         </a>
     </div>
 
-    <div class="card shadow-sm">
+    <div class="card shadow-sm border-0 rounded-3 mb-4">
+        <div class="card-body p-3">
+            <form method="POST" action="{{ url_for('logs_realtime') }}">
+                <div class="row g-2 align-items-center">
+                    
+                    <div class="col-lg-5">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                            <input type="text" name="term" class="form-control border-start-0 ps-0" 
+                                   placeholder="Filtrar por IP, Usuário, Aplicação ou Política..." 
+                                   value="{{ term }}">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-auto ms-lg-3">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" name="show_allowed" id="chkAllow" value="1" 
+                                   {% if show_allowed %}checked{% endif %}>
+                            <label class="form-check-label fw-bold text-success small" for="chkAllow">Permitidos</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" name="show_blocked" id="chkBlock" value="1" 
+                                   {% if show_blocked %}checked{% endif %}>
+                            <label class="form-check-label fw-bold text-danger small" for="chkBlock">Bloqueados</label>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-auto ms-auto d-flex gap-2">
+                        <a href="{{ url_for('logs_realtime') }}" class="btn btn-outline-secondary fw-bold px-3" title="Limpar Filtros">
+                            <i class="bi bi-eraser me-1"></i>
+                        </a>
+
+                        <button type="submit" name="action_btn" value="filter" class="btn btn-primary fw-bold px-3">
+                            <i class="bi bi-funnel-fill me-1"></i> Filtrar
+                        </button>
+                        
+                        <button type="submit" name="action_btn" value="csv" class="btn btn-success fw-bold px-3" title="Baixar CSV">
+                            <i class="bi bi-file-earmark-spreadsheet me-1"></i> CSV
+                        </button>
+
+                         <button type="submit" name="action_btn" value="pdf" class="btn btn-danger fw-bold px-3" title="Baixar PDF">
+                            <i class="bi bi-file-earmark-pdf me-1"></i> PDF
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fw-bold"><i class="bi bi-activity me-2"></i>Fluxo de Dados</h6>
+            <span class="badge bg-light text-dark border">{{ logs|length }} eventos listados</span>
+        </div>
+        
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-striped table-hover mb-0 align-middle">
-                    <thead class="table-dark">
+                <table class="table table-hover align-middle mb-0" style="font-size: 0.9rem;">
+                    <thead class="table-light">
                         <tr>
-                            <th>Hora</th>
+                            <th class="ps-4">Hora</th>
                             <th>Origem</th>
+                            <th>Dispositivo</th>
                             <th>Destino</th>
-                            <th>Ação</th>
                             <th>Aplicação</th>
+                            <th class="text-center">Ação</th>
+                            <th>Política</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for log in logs %}
                         <tr>
-                            <td style="white-space: nowrap;">{{ log.date }} <br> <small class="text-muted">{{ log.time }}</small></td>
-                            <td>
-                                <strong>{{ log.srcname or log.srcip }}</strong><br>
-                                <small class="text-muted">{{ log.srcmac }}</small>
+                            <td class="ps-4">
+                                <div class="fw-bold text-dark">{{ log.date }}</div>
+                                <div class="text-muted small">{{ log.time }}</div>
                             </td>
-                            <td>{{ log.service }} <br> <small class="text-muted">{{ log.dstcountry }}</small></td>
                             <td>
-                                {% if log.action in ['accept', 'allow'] %}
-                                <span class="badge bg-success">Permitido</span>
+                                <div class="fw-bold text-dark">{{ log.srcname or 'Desconhecido' }}</div>
+                                <a href="#" class="text-decoration-none small fw-bold">{{ log.srcip }}</a>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <div class="me-2 text-secondary fs-5">
+                                        {% if 'Windows' in log.osname %}<i class="bi bi-windows"></i>
+                                        {% elif 'Android' in log.osname %}<i class="bi bi-android2 text-success"></i>
+                                        {% elif 'iOS' in log.osname %}<i class="bi bi-apple"></i>
+                                        {% elif 'Linux' in log.osname %}<i class="bi bi-terminal"></i>
+                                        {% else %}<i class="bi bi-question-circle"></i>{% endif %}
+                                    </div>
+                                    <div class="text-muted small">{{ log.osname }}</div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center">
+                                    <i class="bi bi-globe me-2 text-muted"></i>
+                                    <span class="font-monospace text-dark">{{ log.dstip }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                <span class="badge bg-light text-dark border px-2 py-1">
+                                    {{ log.service or log.app or 'TCP' }}
+                                </span>
+                            </td>
+                            <td class="text-center">
+                                {% if log.action in ['accept', 'allow', 'permit'] %}
+                                <i class="bi bi-check-circle-fill text-success fs-5" title="Permitido"></i>
                                 {% else %}
-                                <span class="badge bg-danger">Bloqueado</span>
+                                <i class="bi bi-x-circle-fill text-danger fs-5" title="Bloqueado"></i>
                                 {% endif %}
                             </td>
-                            <td>{{ log.app or log.service }}</td>
+                            <td>
+                                <div class="text-muted small">ID: {{ log.policyid or '-' }}</div>
+                                <div class="small text-secondary">{{ log.policyname or '' }}</div>
+                            </td>
                         </tr>
                         {% else %}
-                        <tr>
-                            <td colspan="5" class="text-center p-4">Nenhum log registrado nas últimas 24h.</td>
-                        </tr>
+                        <tr><td colspan="7" class="text-center p-4 text-muted">Nenhum log corresponde aos filtros.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>

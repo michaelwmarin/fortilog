@@ -1,67 +1,123 @@
 {% extends "base.html" %}
+
 {% block content %}
 <div class="container-fluid p-4">
-    <h2 class="mb-4"><i class="bi bi-calendar-range"></i> Relatório Histórico</h2>
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="fw-bold text-dark mb-0">Relatório Histórico</h2>
+            <p class="text-muted mb-0">Pesquisa avançada em logs antigos</p>
+        </div>
+    </div>
 
-    <div class="card mb-4 shadow-sm border-primary">
-        <div class="card-body bg-light">
-            <form method="POST" class="row g-3 align-items-end">
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Data/Hora Inicial</label>
-                    <input type="datetime-local" name="start_time" class="form-control" value="{{ start_time }}" required>
-                </div>
-                <div class="col-md-4">
-                    <label class="form-label fw-bold">Data/Hora Final</label>
-                    <input type="datetime-local" name="end_time" class="form-control" value="{{ end_time }}" required>
-                </div>
-                <div class="col-md-4">
-                    <button type="submit" class="btn btn-primary w-100">
-                        <i class="bi bi-search"></i> Buscar Logs
-                    </button>
+    <div class="card shadow-sm border-0 rounded-3 mb-4">
+        <div class="card-body p-3">
+            <form method="POST" action="{{ url_for('logs_relatorio') }}">
+                <div class="row g-2 align-items-center">
+                    
+                    <div class="col-lg-3">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                            <input type="text" name="term" class="form-control border-start-0 ps-0" 
+                                   placeholder="Buscar..." value="{{ term }}">
+                        </div>
+                    </div>
+
+                    <div class="col-lg-2">
+                        <input type="datetime-local" name="start_time" class="form-control form-control-sm text-muted" 
+                               value="{{ start_time }}" required>
+                    </div>
+                    <div class="col-lg-2">
+                        <input type="datetime-local" name="end_time" class="form-control form-control-sm text-muted" 
+                               value="{{ end_time }}" required>
+                    </div>
+
+                    <div class="col-lg-auto ms-lg-2">
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" name="show_allowed" id="chkAllow" value="1" {% if show_allowed %}checked{% endif %}>
+                            <label class="form-check-label fw-bold text-success small" for="chkAllow">Permitidos</label>
+                        </div>
+                        <div class="form-check form-check-inline">
+                            <input class="form-check-input" type="checkbox" name="show_blocked" id="chkBlock" value="1" {% if show_blocked %}checked{% endif %}>
+                            <label class="form-check-label fw-bold text-danger small" for="chkBlock">Bloqueados</label>
+                        </div>
+                    </div>
+
+                    <div class="col-lg-auto ms-auto d-flex gap-2">
+                        
+                        <a href="{{ url_for('logs_relatorio') }}" class="btn btn-outline-secondary fw-bold px-3" title="Limpar Filtros">
+                            <i class="bi bi-eraser me-1"></i>
+                        </a>
+
+                        <button type="submit" name="action_btn" value="filter" class="btn btn-primary fw-bold px-3">
+                            <i class="bi bi-funnel-fill me-1"></i> Filtrar
+                        </button>
+                        
+                        <button type="submit" name="action_btn" value="csv" class="btn btn-success fw-bold px-3" title="Baixar CSV">
+                            <i class="bi bi-file-earmark-spreadsheet me-1"></i> CSV
+                        </button>
+
+                        <button type="submit" name="action_btn" value="pdf" class="btn btn-danger fw-bold px-3" title="Baixar PDF">
+                            <i class="bi bi-file-earmark-pdf me-1"></i> PDF
+                        </button>
+                    </div>
                 </div>
             </form>
         </div>
     </div>
 
-    {% if request.method == 'POST' %}
-    <div class="card shadow-sm">
-        <div class="card-header bg-white d-flex justify-content-between align-items-center">
-            <span><span class="fw-bold">Resultados:</span> {{ logs|length }} registros</span>
-            <button onclick="window.print()" class="btn btn-sm btn-outline-dark"><i class="bi bi-printer"></i> Imprimir</button>
+    <div class="card shadow-sm border-0 rounded-3">
+        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
+            <h6 class="mb-0 fw-bold"><i class="bi bi-table me-2"></i>Resultados</h6>
+            <span class="badge bg-light text-dark border">{{ logs|length }} registros</span>
         </div>
+        
         <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-sm table-bordered mb-0">
+                <table class="table table-hover align-middle mb-0" style="font-size: 0.9rem;">
                     <thead class="table-light">
                         <tr>
-                            <th>Data/Hora</th>
+                            <th class="ps-4">Hora</th>
                             <th>Origem</th>
+                            <th>Dispositivo</th>
                             <th>Destino</th>
-                            <th>Ação</th>
+                            <th>App</th>
+                            <th class="text-center">Ação</th>
+                            <th>Política</th>
                         </tr>
                     </thead>
                     <tbody>
                         {% for log in logs %}
                         <tr>
-                            <td>{{ log.date }} {{ log.time }}</td>
-                            <td>{{ log.srcip }} ({{ log.srcname }})</td>
-                            <td>{{ log.dstip }} ({{ log.service }})</td>
+                            <td class="ps-4">
+                                <div class="fw-bold text-dark">{{ log.date }}</div>
+                                <div class="text-muted small">{{ log.time }}</div>
+                            </td>
                             <td>
-                                {% if log.action in ['accept', 'allow'] %}
-                                <span class="text-success">{{ log.action }}</span>
+                                <div class="fw-bold text-dark">{{ log.srcname or '-' }}</div>
+                                <div class="small text-muted">{{ log.srcip }}</div>
+                            </td>
+                            <td>
+                                <div class="text-dark">{{ log.osvendor or '-' }}</div>
+                                <div class="text-muted small">{{ log.osname }}</div>
+                            </td>
+                            <td><span class="font-monospace">{{ log.dstip }}</span></td>
+                            <td><span class="badge bg-light text-dark border">{{ log.service or log.app }}</span></td>
+                            <td class="text-center">
+                                {% if log.action in ['accept', 'allow', 'permit'] %}
+                                <i class="bi bi-check-circle-fill text-success"></i>
                                 {% else %}
-                                <span class="text-danger fw-bold">{{ log.action }}</span>
+                                <i class="bi bi-x-circle-fill text-danger"></i>
                                 {% endif %}
                             </td>
+                            <td><small class="text-muted">{{ log.policyname or log.policyid }}</small></td>
                         </tr>
                         {% else %}
-                        <tr><td colspan="4" class="text-center text-muted p-3">Nenhum log encontrado neste período.</td></tr>
+                        <tr><td colspan="7" class="text-center p-5 text-muted">Sem resultados.</td></tr>
                         {% endfor %}
                     </tbody>
                 </table>
             </div>
         </div>
     </div>
-    {% endif %}
 </div>
 {% endblock %}
