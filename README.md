@@ -1,81 +1,119 @@
-# 🛡️ FortiLog - Dashboard de Monitoramento para FortiGate
+# 🛡️ FortiLog Monitor
 
 ![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
 ![Flask](https://img.shields.io/badge/Flask-2.0%2B-green)
 ![Status](https://img.shields.io/badge/Status-Stable-brightgreen)
+![License](https://img.shields.io/badge/License-MIT-yellow)
 
-O **FortiLog** é uma solução de monitoramento em tempo real projetada para processar logs de firewalls FortiGate. Ele oferece uma interface visual intuitiva para analisar tráfego, identificar ameaças e monitorar a saúde do servidor (CPU/Memória).
+> **SIEM Leve & Dashboard de Monitoramento Híbrido (FortiGate + Linux Server).**
 
-## 🚀 Funcionalidades
+O **FortiLog Monitor** é uma solução web desenvolvida em **Python (Flask)** para centralizar, visualizar e analisar logs de firewalls Fortigate e, simultaneamente, monitorar a saúde do servidor onde está hospedado.
 
-* **Monitoramento em Tempo Real**: Visualização de logs de tráfego conforme eles chegam via Syslog/Tail.
-* **Identificação Inteligente**: Reconhecimento automático de dispositivos (Apple, Windows, Android) e fabricantes.
-* **Geolocalização**: Identificação de países de destino do tráfego.
-* **Alertas via Telegram**: Notificações automáticas para picos de CPU ou falhas de login SSH.
-* **Histórico de Performance**: Gráficos de consumo de recursos do servidor.
+Com uma interface moderna, responsiva e identidade visual profissional, ele transforma logs brutos em inteligência acionável para equipes de TI e Segurança (SOC/NOC).
+
+---
+
+## 📸 Visão Geral do Dashboard
+![Dashboard Principal](screenshots/dashboardp1.png)
+*(Visão unificada: Tráfego de Rede + Status de Hardware + Logs do Sistema Operacional)*
+
+---
+
+## 🚀 Funcionalidades Principais
+
+### 📊 1. Monitoramento Híbrido
+* **Tráfego de Rede:** Cards de total de conexões, permitidos e bloqueios (Firewall).
+* **Hardware Server:** Monitoramento em tempo real de **CPU**, **RAM** e **Disco** do servidor da aplicação.
+* **Logs do Sistema (Linux):** Leitura integrada do `/var/log/syslog` para auditoria de processos, CRON e serviços (Systemd).
+
+### ⚡ 2. Análise em Tempo Real & Histórico
+* **Feed ao Vivo:** Acompanhe o tráfego conforme ele acontece.
+* **Filtros Avançados:** Pesquisa por Texto, IP, Usuário ou Ação (Bloqueado/Permitido).
+* **Exportação Profissional:** Botões integrados para gerar relatórios em **PDF** e **CSV** instantaneamente.
+
+### 🎨 3. Visualização de Dados
+* **Gráficos Interativos:** Distribuição por Fabricantes (Polar Area) e Top Origens (Barras).
+* **Identidade Visual:** Favicon personalizado e layout limpo com Bootstrap 5.
+
+### ⚙️ 4. Gestão e Controle
+* **Gestão de Dispositivos:** Mapeamento de MAC Address para nomes amigáveis.
+* **Controle de Acesso:** Login seguro e níveis de permissão (Admin/Viewer).
+* **Configuração de Alertas:** Definição de triggers para eventos críticos.
+
+---
+
+## 🖼️ Galeria de Telas
+
+| Logs em Tempo Real (Com Exportação) | Relatórios Históricos |
+|:---:|:---:|
+| ![Logs Realtime](screenshots/logs.png) | ![Relatórios](screenshots/user.png) |
+
+| Gestão de Dispositivos | Monitoramento de Sistema |
+|:---:|:---:|
+| ![Dispositivos](screenshots/mac.png) | ![Syslog](screenshots/alertas.png) |
+
+---
 
 ## 🛠️ Tecnologias Utilizadas
 
-* **Backend**: Python 3, Flask
-* **Frontend**: HTML5, CSS3, Bootstrap Icons, Chart.js
-* **Sistema**: Otimizado para Linux (Debian/Ubuntu) e WSL.
-* **Automação**: GitHub Actions (CI/CD Pipeline).
-
-## 📸 Visão Geral
-![Dashboard Principal](screenshots/dashboardp1.png)
-
-![Dashboard Principal](screenshots/dashboardp2.png)
-
-## 🚀 Funcionalidades
-* **Monitoramento em Tempo Real**: Visualização de logs de tráfego conforme eles chegam.
-* **Identificação Inteligente**: Reconhecimento automático de fabricantes (Apple, Samsung, Intelbras).
-* **Alertas**: Notificações automáticas para picos de tráfego ou bloqueios massivos.
-* **Gestão de Dispositivos**: Mapeamento de MAC Address para nomes amigáveis.
-
-## 🖼️ Galeria
-
-### Logs Detalhados
-![Logs](screenshots/logs.png)
-
-### Configuração de Alertas
-![Alertas](screenshots/alertas.png)
-
-### User Detalhados
-![Logs](screenshots/user.png)
-
-### MAC Detalhados
-![Logs](screenshots/mac.png)
-
-### Destinos Detalhados
-![Logs](screenshots/destinos.png)
-
-## ⚙️ Instalação e Execução (WSL/Linux)
-
-1.  **Clone o repositório:**
-    ```bash
-    git clone [https://github.com/michaelwmarin/fortilog.git](https://github.com/michaelwmarin/fortilog.git)
-    cd fortilog
-    ```
-
-2.  **Configure o ambiente:**
-    Crie um arquivo `.env` na raiz do projeto:
-    ```ini
-    LOG_PATH=/opt/fortilog/logs/fortigate.log
-    # Para usar dados de teste, descomente as linhas abaixo no código ou aponte para os arquivos _sample.json
-    ```
-
-3.  **Instale as dependências:**
-    ```bash
-    pip install flask psutil python-dotenv
-    ```
-
-4.  **Execute:**
-    ```bash
-    python3 app.py
-    ```
-
-5.  **Acesse:**
-    Abra o navegador em `http://127.0.0.1:5000`
+* **Backend:** Python 3, Flask.
+* **Frontend:** HTML5, CSS3, Bootstrap 5, Jinja2.
+* **Dados & Gráficos:** Chart.js, Pandas (lógica interna).
+* **Infraestrutura:** `psutil` (Hardware), `fpdf` (Relatórios PDF).
+* **Automação:** Scripts de inicialização automática de JSONs.
 
 ---
-Desenvolvido por **Michael Marin**
+
+## ⚙️ Instalação e Execução (Linux/WSL)
+
+1. **Clone o repositório:**
+   ```bash
+   git clone [https://github.com/michaelwmarin/fortilog.git](https://github.com/michaelwmarin/fortilog.git)
+   cd fortilog
+
+```
+
+2. **Crie o Ambiente Virtual (Recomendado):**
+```bash
+python3 -m venv venv
+source venv/bin/activate
+
+```
+
+
+3. **Instale as dependências:**
+```bash
+pip install flask psutil python-dotenv fpdf
+
+```
+
+
+4. **Configuração (.env):**
+Crie um arquivo `.env` na raiz:
+```ini
+SECRET_KEY=sua_chave_secreta
+LOG_PATH=/opt/fortilog/logs/fortigate.log
+# O sistema criará os JSONs de dados automaticamente na primeira execução
+
+```
+
+
+5. **Execute a aplicação:**
+```bash
+python3 app.py
+
+```
+
+
+6. **Acesse:**
+Abra o navegador em `http://localhost:5000`
+
+---
+
+## 📄 Licença
+
+Este projeto está sob a licença MIT. Sinta-se livre para contribuir!
+
+<p align="center">
+Desenvolvido com 💙 por <strong>Michael Marin</strong>
+</p>
