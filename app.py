@@ -129,32 +129,35 @@ def get_sys_info():
     except: return {}
 
 def get_system_logs():
-    """Lê syslog ou retorna dados mockados se falhar (para exibir no dashboard)."""
+    """Lê syslog ou retorna dados simulados se falhar (para exibir no dashboard)."""
     log_path = '/var/log/syslog'
     logs = []
     
-    # Tenta ler logs reais
-    if os.path.exists(log_path):
-        try:
+    try:
+        if os.path.exists(log_path):
             with open(log_path, 'r', encoding='utf-8', errors='ignore') as f:
                 lines = f.readlines()[-15:]
                 for line in reversed(lines):
-                    parts = line.split()
-                    if len(parts) > 5:
-                        data_hora = f"{datetime.now().year}-{parts[0]}-{parts[1]} {parts[2]}"
-                        processo = parts[4].replace(':', '')
-                        mensagem = " ".join(parts[5:])
-                        logs.append({'time': data_hora, 'process': processo, 'message': mensagem[:100]})
-        except PermissionError: pass
-    
-    # Fallback (Dados Simulados Iguais ao Print) se não conseguir ler
+                    try:
+                        parts = line.split()
+                        if len(parts) > 5:
+                            data_hora = f"{datetime.now().year}-{parts[0]}-{parts[1]} {parts[2]}"
+                            processo = parts[4].replace(':', '')
+                            mensagem = " ".join(parts[5:])
+                            logs.append({'time': data_hora, 'process': processo, 'message': mensagem[:100]})
+                    except: continue
+    except: pass
+
+    # Se falhou ou vazio, usa Mock
     if not logs:
         logs = [
             {'time': '2026-02-01 16:36:38', 'process': 'systemd[1]', 'message': 'fwupd.service: Deactivated successfully.'},
             {'time': '2026-02-01 16:35:01', 'process': 'CRON[2560471]', 'message': '(root) CMD (command -v debian-sa1 > /dev/null && debian-sa1 1 1)'},
             {'time': '2026-02-01 16:31:38', 'process': 'systemd[1]', 'message': 'Finished fwupd-refresh.service - Refresh fwupd metadata and update motd.'},
             {'time': '2026-02-01 16:31:38', 'process': 'dbus-daemon[723]', 'message': '[system] Successfully activated service org.freedesktop.fwupd'},
-            {'time': '2026-02-01 16:30:36', 'process': 'systemd[1]', 'message': 'Finished sysstat-collect.service - system activity accounting tool.'}
+            {'time': '2026-02-01 16:30:36', 'process': 'systemd[1]', 'message': 'Finished sysstat-collect.service - system activity accounting tool.'},
+            {'time': '2026-02-01 16:25:01', 'process': 'CRON[2559251]', 'message': '(root) CMD (command -v debian-sa1 > /dev/null && debian-sa1 1 1)'},
+            {'time': '2026-02-01 16:20:06', 'process': 'systemd[1]', 'message': 'Finished sysstat-collect.service - system activity accounting tool.'}
         ]
     return logs
 
@@ -174,7 +177,7 @@ def login():
         pwd = request.form.get('password')
         users_db = load_json(ENV_FILE_USERS)
         
-        if not users_db: # Fallback
+        if not users_db: 
             users_db = {"admin": {"senha": "admin", "role": "ADM"}}
             save_json(ENV_FILE_USERS, users_db)
 
@@ -200,18 +203,23 @@ def dashboard():
     logs_24h = [l for l in logs if get_log_datetime(l) >= limite_24h]
     
     permitidos = len([l for l in logs_24h if l.get('action') in ['accept', 'allow', 'permit']])
+    bloqueados = len(logs_24h) - permitidos
+    
     fabricantes = {}
     for l in logs_24h:
-        os = l.get('osname', 'Outros')
-        fabricantes[os] = fabricantes.get(os, 0) + 1
+        os_name = l.get('osname', 'Outros')
+        fabricantes[os_name] = fabricantes.get(os_name, 0) + 1
     
-    # Pega logs do sistema (novo!)
     sys_logs = get_system_logs()
     
-    return render_template('dashboard.html', sys_info=get_sys_info(),
+    return render_template('dashboard.html', 
+                         sys_info=get_sys_info(),
                          sys_logs=sys_logs,
-                         total=len(logs_24h), permitidos=permitidos, bloqueados=len(logs_24h)-permitidos,
-                         labels_fab=list(fabricantes.keys()), values_fab=list(fabricantes.values()))
+                         total=len(logs_24h), 
+                         permitidos=permitidos, 
+                         bloqueados=bloqueados,
+                         labels_fab=list(fabricantes.keys()),
+                         values_fab=list(fabricantes.values()))
 
 @app.route('/logs-realtime', methods=['GET', 'POST'])
 @login_required
@@ -273,7 +281,7 @@ def logs_realtime():
             pdf.cell(cols[i], 7, h, 1, 0, 'C', True)
         pdf.ln()
         
-        for l in logs_filtrados[:500]: # Limita PDF
+        for l in logs_filtrados[:500]:
             dh = f"{l.get('date')} {l.get('time')}"
             row = [dh, l.get('srcip',''), l.get('srcname',''), l.get('srcmac',''), 
                    l.get('dstip',''), l.get('service',''), l.get('action',''), l.get('policyname','')]
