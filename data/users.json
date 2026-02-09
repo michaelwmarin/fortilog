@@ -2,10 +2,6 @@
     "admin": {
         "senha": "admin",
         "role": "ADM",
-        "nome": "Administrador",
-        "email": "admin@fortilog.local",
-        "telegram": "",
-        "grupo_restricao": "Total",
-        "ativo": true
+        "group_access": "TODOS"
     }
 }

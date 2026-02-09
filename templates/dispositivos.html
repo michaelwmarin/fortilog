@@ -1,139 +1,84 @@
-{% extends "base.html" %}
-
+{% extends 'base.html' %}
 {% block content %}
-<div class="container-fluid p-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="fw-bold text-dark mb-0">Dispositivos da Rede</h2>
-            <p class="text-muted mb-0">Gerencie os nomes para endereços MAC (Aliasing)</p>
-        </div>
-        <button class="btn btn-primary fw-bold shadow-sm px-4 py-2" data-bs-toggle="modal" data-bs-target="#modalNovoDispositivo">
-            <i class="bi bi-plus-lg me-2"></i> Adicionar Dispositivo
+<div class="row mb-4 align-items-center">
+    <div class="col">
+        <h2><i class="bi bi-laptop"></i> Dispositivos Conhecidos</h2>
+        <p class="text-muted">Gerencie quem é dono de cada endereço MAC.</p>
+    </div>
+    <div class="col-auto">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addDeviceModal">
+            <i class="bi bi-plus-lg"></i> Novo Dispositivo
         </button>
     </div>
+</div>
 
-    <div class="card shadow-sm border-0 rounded-3">
-        <div class="card-header bg-white py-3 border-bottom">
-            <div class="row align-items-center">
-                <div class="col">
-                    <h6 class="mb-0 fw-bold"><i class="bi bi-hdd-network me-2"></i>Dispositivos Cadastrados</h6>
-                </div>
-                <div class="col-auto">
-                    <div class="input-group input-group-sm" style="width: 250px;">
-                        <span class="input-group-text bg-light border-end-0"><i class="bi bi-search"></i></span>
-                        <input type="text" class="form-control bg-light border-start-0" placeholder="Buscar MAC ou Nome...">
-                    </div>
-                </div>
+<div class="row g-3">
+    {% for nome, macs in grupos.items() %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center bg-light">
+                <h5 class="card-title mb-0 fw-bold text-primary">{{ nome }}</h5>
+                <span class="badge bg-secondary">{{ macs|length }} dispositivos</span>
             </div>
-        </div>
-        
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="ps-4 text-uppercase text-muted small fw-bold">Nome</th>
-                            <th class="text-uppercase text-muted small fw-bold">Endereço MAC</th>
-                            <th class="text-uppercase text-muted small fw-bold">Status</th>
-                            <th class="text-uppercase text-muted small fw-bold text-end pe-4">Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for mac, nome in devices.items() %}
-                        <tr>
-                            <td class="ps-4 py-3">
-                                <div class="d-flex align-items-center">
-                                    <div class="bg-primary-subtle text-primary rounded-circle d-flex align-items-center justify-content-center border border-primary-subtle me-3" style="width: 45px; height: 45px;">
-                                        <i class="bi bi-laptop fs-5"></i>
-                                    </div>
-                                    <div>
-                                        <h6 class="mb-0 fw-bold text-dark">{{ nome }}</h6>
-                                        <small class="text-muted">Dispositivo Conhecido</small>
-                                    </div>
-                                </div>
-                            </td>
-
-                            <td>
-                                <span class="font-monospace bg-light border px-2 py-1 rounded small text-dark">
-                                    <i class="bi bi-qr-code me-1 text-muted"></i>{{ mac }}
-                                </span>
-                            </td>
-
-                            <td>
-                                <span class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-3">
-                                    Identificado
-                                </span>
-                            </td>
-
-                            <td class="text-end pe-4">
-                                <button class="btn btn-sm btn-outline-secondary border-0 me-1" title="Editar">
-                                    <i class="bi bi-pencil-square fs-5"></i>
-                                </button>
-                                
-                                <form action="{{ url_for('dispositivos') }}" method="POST" style="display:inline-block;">
-                                    <input type="hidden" name="action" value="delete">
-                                    <input type="hidden" name="mac" value="{{ mac }}">
-                                    <button type="submit" class="btn btn-sm btn-outline-danger border-0" onclick="return confirm('Esquecer este dispositivo?')">
-                                        <i class="bi bi-trash fs-5"></i>
-                                    </button>
-                                </form>
-                            </td>
-                        </tr>
-                        {% else %}
-                        <tr>
-                            <td colspan="4" class="text-center p-5 text-muted">
-                                <i class="bi bi-router fs-1 mb-3 d-block opacity-50"></i>
-                                Nenhum dispositivo cadastrado.<br>
-                                <small>Os logs mostrarão apenas o MAC até você cadastrar um nome.</small>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+            <div class="card-body">
+                <ul class="list-group list-group-flush small">
+                    {% for mac in macs %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center px-0">
+                        <span class="font-monospace text-muted">{{ mac }}</span>
+                        <form method="POST" action="{{ url_for('dispositivos') }}" style="display:inline;">
+                            <input type="hidden" name="action" value="delete">
+                            <input type="hidden" name="mac" value="{{ mac }}">
+                            <button type="submit" class="btn btn-link text-danger p-0" title="Remover este MAC">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </form>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="card-footer bg-white border-top-0 text-end">
+                <button class="btn btn-sm btn-outline-primary" onclick="addMacTo('{{ nome }}')">
+                    <i class="bi bi-plus-circle"></i> Adicionar MAC
+                </button>
             </div>
         </div>
     </div>
+    {% endfor %}
 </div>
 
-<div class="modal fade" id="modalNovoDispositivo" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content border-0 shadow-lg">
-            <div class="modal-header border-bottom-0 pb-0">
-                <h5 class="modal-title fw-bold">Cadastrar Dispositivo</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-4">
-                <form method="POST" action="{{ url_for('dispositivos') }}">
-                    <input type="hidden" name="action" value="add">
-                    
-                    <div class="alert alert-light border mb-4 small text-muted">
-                        <i class="bi bi-info-circle me-1"></i> Ao cadastrar, os logs futuros mostrarão o <strong>Nome</strong> em vez do código MAC.
-                    </div>
-
+<div class="modal fade" id="addDeviceModal" tabindex="-1">
+    <div class="modal-dialog">
+        <form method="POST" action="{{ url_for('dispositivos') }}">
+            <input type="hidden" name="action" value="add">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Cadastrar Dispositivo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
                     <div class="mb-3">
-                        <label class="form-label small fw-bold text-muted">Endereço MAC</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light"><i class="bi bi-cpu"></i></span>
-                            <input type="text" name="mac" class="form-control font-monospace" placeholder="Ex: 00:1A:2B:3C:4D:5E" required>
-                        </div>
+                        <label class="form-label">Nome do Usuário / Equipamento</label>
+                        <input type="text" class="form-control" name="nome" id="modalNomeInput" required placeholder="Ex: Michael Marin">
                     </div>
-
-                    <div class="mb-4">
-                        <label class="form-label small fw-bold text-muted">Nome Amigável</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light"><i class="bi bi-tag"></i></span>
-                            <input type="text" name="nome" class="form-control" placeholder="Ex: iPhone do Diretor" required>
-                        </div>
+                    <div class="mb-3">
+                        <label class="form-label">Endereço MAC</label>
+                        <input type="text" class="form-control" name="mac" required placeholder="00:11:22:33:44:55">
                     </div>
-
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary fw-bold py-2">
-                            <i class="bi bi-save me-2"></i>Salvar Dispositivo
-                        </button>
-                    </div>
-                </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Salvar</button>
+                </div>
             </div>
-        </div>
+        </form>
     </div>
 </div>
+
+<script>
+function addMacTo(nome) {
+    var modal = new bootstrap.Modal(document.getElementById('addDeviceModal'));
+    document.getElementById('modalNomeInput').value = nome;
+    modal.show();
+}
+</script>
 {% endblock %}

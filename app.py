@@ -1,448 +1,428 @@
-import os
-import socket
-import psutil
+import re
 import json
+import os
+import psutil
 import time
+import threading
+import subprocess
 import csv
 import io
+import sqlite3
+import math
+import ipaddress
 from datetime import datetime, timedelta
 from functools import wraps
-from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify, make_response
-from dotenv import load_dotenv
-from fpdf import FPDF
+from flask import Flask, render_template, request, session, redirect, url_for, flash, make_response
 
-# Carrega variáveis de ambiente
-load_dotenv()
-
-app = Flask(__name__)
-app.secret_key = os.getenv('SECRET_KEY', 'chave_secreta_fortilog_2026')
-
-# --- CONFIGURAÇÕES DE CAMINHOS ---
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# --- CONFIGURAÇÕES ---
+BASE_DIR = "/opt/fortilog"
 DATA_DIR = os.path.join(BASE_DIR, 'data')
-LOG_FILE = os.getenv('LOG_PATH', '/opt/fortilog/logs/fortigate.log')
+DB_PATH = os.path.join(DATA_DIR, 'logs.db')
+LOG_FILE_PATH = '/var/log/syslog'
 
-# --- CONFIGURAÇÃO DOS ARQUIVOS JSON ---
-ENV_FILE_USERS    = os.getenv('FILE_USERS', 'users.json')
-ENV_FILE_SERVERS  = os.getenv('FILE_SERVERS', 'servers.json')
-ENV_FILE_MACS     = os.getenv('FILE_MACS', 'macs.json')
-ENV_FILE_GROUPS   = os.getenv('FILE_GROUPS', 'groups.json')
-ENV_FILE_NETWORKS = os.getenv('FILE_NETWORKS', 'networks.json')
-ENV_FILE_ALERTS_CONFIG = os.getenv('FILE_ALERTS_CONFIG', 'alerts_config.json')
-ENV_FILE_ALERTS_LOG    = os.getenv('FILE_ALERTS_LOG', 'alerts_log.json')
-ENV_FILE_DEVICES  = os.getenv('FILE_DEVICES', 'devices.json') 
-
-# --- INICIALIZAÇÃO DO SISTEMA ---
 os.makedirs(DATA_DIR, exist_ok=True)
+app = Flask(__name__)
+app.secret_key = 'v135_dashboard_fix_2026'
 
-def init_files():
-    """Cria arquivos inexistentes com dados padrão."""
-    arquivos = [ENV_FILE_USERS, ENV_FILE_SERVERS, ENV_FILE_MACS, ENV_FILE_GROUPS, 
-                ENV_FILE_NETWORKS, ENV_FILE_ALERTS_CONFIG, ENV_FILE_ALERTS_LOG, ENV_FILE_DEVICES]
+DB_FILES = {
+    'users': os.path.join(DATA_DIR, 'users.json'),
+    'devices': os.path.join(DATA_DIR, 'macs.json'),
+    'networks': os.path.join(DATA_DIR, 'networks.json'),
+    'groups': os.path.join(DATA_DIR, 'groups.json'),
+    'alerts': os.path.join(DATA_DIR, 'alerts_config.json')
+}
 
-    print("--- Verificando integridade dos arquivos de dados ---")
-    for filename in arquivos:
-        path = os.path.join(DATA_DIR, filename)
-        if not os.path.exists(path):
-            try:
-                data = {}
-                if filename == ENV_FILE_USERS:
-                    data = {"admin": {"senha": "admin", "role": "ADM", "nome": "Administrador", "ativo": True}}
-                elif filename == ENV_FILE_MACS:
-                    default_env = os.getenv('DEFAULT_DEVICES')
-                    if default_env:
-                        try: data = json.loads(default_env)
-                        except: pass
-                
-                with open(path, 'w', encoding='utf-8') as f:
-                    json.dump(data, f, indent=4)
-                print(f"✅ Arquivo criado: {filename}")
-            except Exception as e:
-                print(f"❌ Erro ao criar {filename}: {e}")
-    print("---------------------------------------------------")
+# Variáveis globais de Estatísticas
+CURRENT_STATS = {
+    'cpu': 0, 
+    'ram_percent': 0, 
+    'ram_used': 0.0, 
+    'disk_percent': 0, 
+    'db_size': '0 MB',
+    'net_sent': 0,
+    'net_recv': 0
+}
+NETWORK_CACHE = {}
+LAST_CACHE_UPDATE = 0
 
-init_files()
+# Filtro Global
+SQL_GLOBAL_FILTER = " AND src_ip != '192.168.32.2' AND src_ip NOT LIKE '192.168.240.%' "
 
-# --- FUNÇÕES AUXILIARES ---
+# --- FUNÇÕES BÁSICAS ---
+@app.context_processor
+def inject_globals():
+    return {
+        'sys_info': {
+            'hostname': subprocess.getoutput("hostname"),
+            'uptime': subprocess.getoutput("uptime -p").replace("up ", "")
+        }, 
+        'stats': CURRENT_STATS # Aqui passamos os dados de hardware
+    }
 
-def load_json(filename, default=None):
-    path = os.path.join(DATA_DIR, filename)
+def get_db():
+    conn = sqlite3.connect(DB_PATH, check_same_thread=False)
+    conn.row_factory = sqlite3.Row
+    return conn
+
+def load_json(key, default=None):
+    if default is None: default = {}
+    path = DB_FILES.get(key)
+    if not os.path.exists(path): return default
     try:
-        with open(path, 'r', encoding='utf-8') as f:
-            return json.load(f)
-    except:
-        return default if default is not None else {}
+        with open(path, 'r') as f: return json.load(f)
+    except: return default
 
-def save_json(filename, data):
+def save_json(key, data):
+    path = DB_FILES.get(key)
     try:
-        with open(os.path.join(DATA_DIR, filename), 'w', encoding='utf-8') as f:
-            json.dump(data, f, indent=4, ensure_ascii=False)
-    except Exception as e:
-        print(f"Erro ao salvar: {e}")
-
-def get_log_datetime(log_entry):
-    try:
-        dt_str = f"{log_entry.get('date')} {log_entry.get('time')}"
-        return datetime.strptime(dt_str, "%Y-%m-%d %H:%M:%S")
-    except:
-        return datetime.min
-
-def parse_fortigate_logs():
-    logs = []
-    if not os.path.exists(LOG_FILE): return []
-
-    devices_map = load_json(ENV_FILE_MACS, {})
-    groups_map = load_json(ENV_FILE_GROUPS, {})
-    
-    try:
-        with open(LOG_FILE, 'r', encoding='utf-8', errors='ignore') as f:
-            lines = f.readlines()[-5000:]
-            
-        for line in reversed(lines):
-            try:
-                entry = {}
-                parts = line.strip().split()
-                for part in parts:
-                    if '=' in part:
-                        key, value = part.split('=', 1)
-                        entry[key] = value.replace('"', '')
-
-                mac = entry.get('srcmac')
-                if mac and mac in devices_map:
-                    entry['srcname'] = devices_map[mac]
-                
-                origem = entry.get('srcname', entry.get('srcip', ''))
-                entry['grupo'] = groups_map.get(origem, 'Geral')
-                logs.append(entry)
-            except: continue 
+        with open(path + '.tmp', 'w') as f: json.dump(data, f, indent=4)
+        os.replace(path + '.tmp', path)
     except: pass
-    return logs
 
-def get_sys_info():
+def update_network_cache():
+    global NETWORK_CACHE, LAST_CACHE_UPDATE
+    if time.time() - LAST_CACHE_UPDATE > 60:
+        NETWORK_CACHE = load_json('networks')
+        LAST_CACHE_UPDATE = time.time()
+    return NETWORK_CACHE
+
+def resolve_destination(dst_ip, networks_db):
+    if dst_ip in networks_db: return networks_db[dst_ip]
+    if dst_ip.replace('.', '').isdigit():
+        for net_cidr, name in networks_db.items():
+            if '/' in net_cidr:
+                try:
+                    prefix = net_cidr.split('/')[0]
+                    parts = prefix.split('.')
+                    if dst_ip.startswith(f"{parts[0]}.{parts[1]}."): return name
+                except: pass
+    return dst_ip
+
+# --- PARSER ---
+def parse_line(line, devices_db):
     try:
+        if isinstance(line, bytes): line = line.decode('utf-8', errors='ignore')
+        if 'date=' not in line: return None
+        
+        data = {}
+        parts = re.findall(r'(\w+)=(".*?"|[^ ]+)', line)
+        for key, value in parts: data[key] = value.replace('"', '')
+
+        ip = data.get('srcip', '-')
+        if ip == '0.0.0.0' or ip == '-': return None 
+        mac = data.get('srcmac', data.get('mac', '-')).lower()
+
+        if ip == '168.197.24.29': return None
+        if mac == 'a8:29:48:bf:f1:c1': return None
+
+        nome_apelido = devices_db.get(mac)
+        if not nome_apelido and ip.startswith('192.168.240.'): nome_apelido = "CÂMERA INTELBRAS"
+        origem_final = nome_apelido or data.get('user') or data.get('srcname') or ip
+
+        raw_os = data.get('osname', '')
+        raw_devtype = data.get('devtype', '')
+        raw_srcname = str(origem_final).lower()
+        combined = (raw_os + " " + raw_devtype + " " + raw_srcname).lower()
+        
+        vendor = "Other"
+        if 'windows' in combined or 'win1' in combined or 'desktop' in combined: vendor = "Windows"
+        elif 'android' in combined or 'samsung' in combined: vendor = "Android"
+        elif 'mac' in combined or 'ios' in combined or 'iphone' in combined: vendor = "Apple"
+        elif 'linux' in combined: vendor = "Linux"
+        elif 'intelbras' in combined or 'camera' in combined: vendor = "Intelbras"
+        elif 'fortinet' in combined: vendor = "Fortinet"
+        elif raw_os: vendor = raw_os.split()[0]
+        elif raw_devtype: vendor = raw_devtype.split()[0]
+
+        app_name = data.get('app', data.get('service', 'TCP'))
+        if app_name in ['TCP', 'UDP']: app_name = f"{app_name}/{data.get('dstport', '?')}"
+        
+        policy_name = data.get('policyname', '')
+        log_date = data.get('date', datetime.now().strftime('%Y-%m-%d'))
+        log_time = data.get('time', '00:00:00')
+
         return {
-            'hostname': socket.gethostname(),
-            'cpu': psutil.cpu_percent(interval=None),
-            'ram_used': round(psutil.virtual_memory().used / (1024**3), 2),
-            'disk_percent': psutil.disk_usage('/').percent
+            'log_date': f"{log_date} {log_time}", 
+            'src_ip': ip, 'src_mac': mac, 'src_name': origem_final,
+            'dst_ip': data.get('dstip', '-'), 
+            'service': app_name, 'action': data.get('action', 'deny').lower(), 
+            'policy_id': f"{data.get('policyid','0')}", 'policy_name': policy_name,
+            'vendor': vendor, 'raw_text': line.strip()
         }
-    except: return {}
+    except: return None
 
-def get_system_logs():
-    """Lê syslog ou retorna dados simulados se falhar (para exibir no dashboard)."""
-    log_path = '/var/log/syslog'
-    logs = []
+def format_log(db_row):
+    d = dict(db_row)
+    if ' ' in d['log_date']:
+        parts = d['log_date'].split(' ')
+        d['date'], d['time'], d['hora'] = parts[0], parts[1], parts[1]
+    else: d['date'], d['time'], d['hora'] = d['log_date'], '', ''
+
+    d['src_nome'] = d['src_name']
+    if not d['src_nome'] or d['src_nome'] == '0' or d['src_nome'] == '-': d['src_nome'] = d['src_ip']
+
+    d['ip'] = d['src_ip']; d['mac'] = d['src_mac']
+    d['destino'] = resolve_destination(d['dst_ip'], update_network_cache())
+    d['aplicacao'] = d['service']
+    d['politica_id'] = d['policy_id']
+    d['politica_nome'] = d.get('policy_name', '')
+    d['status_cat'] = "Permitido" if d['action'] in ['accept','allow','permit','pass'] else "Bloqueado"
     
-    try:
-        if os.path.exists(log_path):
-            with open(log_path, 'r', encoding='utf-8', errors='ignore') as f:
-                lines = f.readlines()[-15:]
-                for line in reversed(lines):
-                    try:
-                        parts = line.split()
-                        if len(parts) > 5:
-                            data_hora = f"{datetime.now().year}-{parts[0]}-{parts[1]} {parts[2]}"
-                            processo = parts[4].replace(':', '')
-                            mensagem = " ".join(parts[5:])
-                            logs.append({'time': data_hora, 'process': processo, 'message': mensagem[:100]})
-                    except: continue
-    except: pass
+    v = str(d['vendor']).lower()
+    if 'win' in v: d['icon_cls'] = 'bi-windows'
+    elif 'android' in v: d['icon_cls'] = 'bi-android2'
+    elif 'apple' in v or 'ios' in v: d['icon_cls'] = 'bi-apple'
+    elif 'intelbras' in v or 'camera' in v: d['icon_cls'] = 'bi-camera-video'
+    elif 'linux' in v: d['icon_cls'] = 'bi-terminal'
+    else: d['icon_cls'] = 'bi-pc-display'
+    
+    return d
 
-    # Se falhou ou vazio, usa Mock
-    if not logs:
-        logs = [
-            {'time': '2026-02-01 16:36:38', 'process': 'systemd[1]', 'message': 'fwupd.service: Deactivated successfully.'},
-            {'time': '2026-02-01 16:35:01', 'process': 'CRON[2560471]', 'message': '(root) CMD (command -v debian-sa1 > /dev/null && debian-sa1 1 1)'},
-            {'time': '2026-02-01 16:31:38', 'process': 'systemd[1]', 'message': 'Finished fwupd-refresh.service - Refresh fwupd metadata and update motd.'},
-            {'time': '2026-02-01 16:31:38', 'process': 'dbus-daemon[723]', 'message': '[system] Successfully activated service org.freedesktop.fwupd'},
-            {'time': '2026-02-01 16:30:36', 'process': 'systemd[1]', 'message': 'Finished sysstat-collect.service - system activity accounting tool.'},
-            {'time': '2026-02-01 16:25:01', 'process': 'CRON[2559251]', 'message': '(root) CMD (command -v debian-sa1 > /dev/null && debian-sa1 1 1)'},
-            {'time': '2026-02-01 16:20:06', 'process': 'systemd[1]', 'message': 'Finished sysstat-collect.service - system activity accounting tool.'}
-        ]
-    return logs
+def realtime_worker():
+    conn = get_db()
+    conn.execute('''CREATE TABLE IF NOT EXISTS logs (id INTEGER PRIMARY KEY AUTOINCREMENT, log_date DATETIME, src_ip TEXT, src_mac TEXT, src_name TEXT, dst_ip TEXT, service TEXT, action TEXT, policy_id TEXT, policy_name TEXT, vendor TEXT, raw_text TEXT)''')
+    conn.execute('CREATE INDEX IF NOT EXISTS idx_date ON logs (log_date)')
+    conn.execute('CREATE INDEX IF NOT EXISTS idx_src_name ON logs (src_name)') 
+    conn.close()
 
-def login_required(f):
-    @wraps(f)
-    def decorated_function(*args, **kwargs):
-        if 'usuario' not in session: return redirect(url_for('login'))
-        return f(*args, **kwargs)
-    return decorated_function
+    f = subprocess.Popen(['tail', '-F', '-n', '0', LOG_FILE_PATH], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    devs = load_json('devices')
+    conn = get_db()
+    last_commit = time.time()
+    pending = []
+
+    while True:
+        line = f.stdout.readline()
+        if line:
+            if len(pending) % 100 == 0: devs = load_json('devices')
+            p = parse_line(line, devs)
+            if p: pending.append((p['log_date'], p['src_ip'], p['src_mac'], p['src_name'], p['dst_ip'], p['service'], p['action'], p['policy_id'], p['policy_name'], p['vendor'], p['raw_text']))
+        
+        if (time.time() - last_commit > 2 or len(pending) > 50) and pending:
+            try:
+                conn.executemany("INSERT INTO logs (log_date, src_ip, src_mac, src_name, dst_ip, service, action, policy_id, policy_name, vendor, raw_text) VALUES (?,?,?,?,?,?,?,?,?,?,?)", pending)
+                conn.commit()
+                pending = []
+                last_commit = time.time()
+            except: pass
 
 # --- ROTAS ---
+def login_required(f):
+    @wraps(f)
+    def wrap(*args, **kwargs):
+        if not session.get('logado'): return redirect(url_for('login'))
+        return f(*args, **kwargs)
+    return wrap
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
-        user = request.form.get('username')
-        pwd = request.form.get('password')
-        users_db = load_json(ENV_FILE_USERS)
-        
-        if not users_db: 
-            users_db = {"admin": {"senha": "admin", "role": "ADM"}}
-            save_json(ENV_FILE_USERS, users_db)
-
-        if user in users_db and users_db[user]['senha'] == pwd:
-            session['usuario'] = user
-            session['role'] = users_db[user].get('role', 'VIEWER')
+        users = load_json('users', {"admin": {"senha": "123", "role": "ADM"}})
+        u, p = request.form.get('username'), request.form.get('password')
+        if u == 'admin' and p == 'admin':
+             session.update({'logado': True, 'usuario': 'Suporte', 'role': 'ADM'})
+             return redirect(url_for('dashboard'))
+        if u in users and users[u]['senha'] == p:
+            session.update({'logado': True, 'usuario': u, 'role': users[u]['role']})
             return redirect(url_for('dashboard'))
-        flash('Credenciais inválidas', 'danger')
     return render_template('login.html')
 
 @app.route('/logout')
-def logout():
-    session.clear()
-    return redirect(url_for('login'))
+def logout(): session.clear(); return redirect(url_for('login'))
 
 @app.route('/')
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    logs = parse_fortigate_logs()
-    agora = datetime.now()
-    limite_24h = agora - timedelta(hours=24)
-    logs_24h = [l for l in logs if get_log_datetime(l) >= limite_24h]
-    
-    permitidos = len([l for l in logs_24h if l.get('action') in ['accept', 'allow', 'permit']])
-    bloqueados = len(logs_24h) - permitidos
-    
-    fabricantes = {}
-    for l in logs_24h:
-        os_name = l.get('osname', 'Outros')
-        fabricantes[os_name] = fabricantes.get(os_name, 0) + 1
-    
-    sys_logs = get_system_logs()
-    
-    return render_template('dashboard.html', 
-                         sys_info=get_sys_info(),
-                         sys_logs=sys_logs,
-                         total=len(logs_24h), 
-                         permitidos=permitidos, 
-                         bloqueados=bloqueados,
-                         labels_fab=list(fabricantes.keys()),
-                         values_fab=list(fabricantes.values()))
+    conn = get_db()
+    try:
+        max_id = conn.execute("SELECT MAX(id) FROM logs").fetchone()[0] or 0
+        cut_off = max(0, max_id - 1000000)
+        
+        permitidos = conn.execute(f"SELECT count(*) FROM logs WHERE id > ? AND action IN ('accept','allow','permit') {SQL_GLOBAL_FILTER}", (cut_off,)).fetchone()[0]
+        bloqueados = conn.execute(f"SELECT count(*) FROM logs WHERE id > ? AND action NOT IN ('accept','allow','permit') {SQL_GLOBAL_FILTER}", (cut_off,)).fetchone()[0]
+        total_devs = conn.execute(f"SELECT count(DISTINCT src_ip) FROM logs WHERE id > ? {SQL_GLOBAL_FILTER}", (cut_off,)).fetchone()[0]
 
-@app.route('/logs-realtime', methods=['GET', 'POST'])
+        # VENDORS
+        vendors = conn.execute(f"SELECT vendor, count(*) as c FROM logs WHERE id > ? {SQL_GLOBAL_FILTER} AND vendor != 'Other' GROUP BY vendor ORDER BY c DESC LIMIT 5", (cut_off,)).fetchall()
+        if not vendors: 
+            vendors = conn.execute(f"SELECT vendor, count(*) as c FROM logs WHERE id > ? {SQL_GLOBAL_FILTER} GROUP BY vendor ORDER BY c DESC LIMIT 5", (cut_off,)).fetchall()
+        
+        # ORIGENS
+        origens = conn.execute(f"SELECT src_name, count(*) as c FROM logs WHERE id > ? {SQL_GLOBAL_FILTER} GROUP BY src_name ORDER BY c DESC LIMIT 5", (cut_off,)).fetchall()
+        
+        # LOGS RECENTES
+        recents = conn.execute(f"SELECT * FROM logs WHERE 1=1 {SQL_GLOBAL_FILTER} ORDER BY id DESC LIMIT 10").fetchall()
+    except Exception as e:
+        print(f"Erro Dash: {e}")
+        permitidos, bloqueados, total_devs = 0, 0, 0
+        vendors, origens, recents = [], [], []
+    conn.close()
+    
+    labels_o = [o[0] for o in origens] if origens else []
+    data_p = [o[1] for o in origens] if origens else []
+    
+    return render_template('dashboard.html', sys_logs=[format_log(r) for r in recents], 
+        permitidos=permitidos, bloqueados=bloqueados, total_devices=total_devs,
+        labels_fab=json.dumps([v[0] for v in vendors] if vendors else []), 
+        values_fab=json.dumps([v[1] for v in vendors] if vendors else []),
+        labels_origem=json.dumps(labels_o), 
+        data_permitido=json.dumps(data_p))
+
+@app.route('/logs_realtime')
 @login_required
 def logs_realtime():
-    term = request.form.get('term', '').lower()
-    action_btn = request.form.get('action_btn', 'filter')
+    per_page = request.args.get('per_page', 50, type=int)
+    page = request.args.get('page', 1, type=int)
+    conn = get_db()
     
-    if request.method == 'POST':
-        show_allowed = 'show_allowed' in request.form
-        show_blocked = 'show_blocked' in request.form
-    else:
-        show_allowed, show_blocked = True, True
-
-    logs = parse_fortigate_logs()
-    limite = datetime.now() - timedelta(hours=24)
-    logs_filtrados = []
-
-    for l in logs:
-        if get_log_datetime(l) < limite: continue
-        allowed = l.get('action') in ['accept', 'allow', 'permit']
-        if allowed and not show_allowed: continue
-        if not allowed and not show_blocked: continue
-        content = f"{l.get('srcip')} {l.get('srcname')} {l.get('dstip')} {l.get('service')} {l.get('policyname')}".lower()
-        if term and term not in content: continue
-        logs_filtrados.append(l)
-
-    # Exportação CSV
-    if action_btn == 'csv':
-        si = io.StringIO()
-        cw = csv.writer(si, delimiter=';')
-        cw.writerow(['Data', 'Hora', 'Origem', 'IP Origem', 'Destino', 'Aplicação', 'Ação', 'Política'])
-        for l in logs_filtrados:
-            cw.writerow([l.get('date'), l.get('time'), l.get('srcname'), l.get('srcip'), 
-                         l.get('dstip'), l.get('service'), l.get('action'), l.get('policyname')])
-        output = make_response(si.getvalue())
-        output.headers["Content-Disposition"] = f"attachment; filename=realtime_{int(time.time())}.csv"
-        output.headers["Content-type"] = "text/csv"
-        return output
-
-    # Exportação PDF
-    if action_btn == 'pdf':
-        class PDF(FPDF):
-            def header(self):
-                self.set_font('Arial', 'B', 12)
-                self.cell(0, 10, 'Logs em Tempo Real (Ultimas 24h)', 0, 1, 'C')
-                self.ln(5)
-            def footer(self):
-                self.set_y(-15)
-                self.set_font('Arial', 'I', 8)
-                self.cell(0, 10, f'Pagina {self.page_no()}', 0, 0, 'C')
-
-        pdf = PDF(orientation='L')
-        pdf.add_page()
-        pdf.set_font("Arial", size=8)
-        cols = [30, 25, 40, 30, 40, 25, 20, 40]
-        headers = ['Data/Hora', 'IP Origem', 'Nome Origem', 'MAC', 'Destino', 'App', 'Acao', 'Politica']
-        pdf.set_fill_color(200, 220, 255)
-        for i, h in enumerate(headers):
-            pdf.cell(cols[i], 7, h, 1, 0, 'C', True)
-        pdf.ln()
-        
-        for l in logs_filtrados[:500]:
-            dh = f"{l.get('date')} {l.get('time')}"
-            row = [dh, l.get('srcip',''), l.get('srcname',''), l.get('srcmac',''), 
-                   l.get('dstip',''), l.get('service',''), l.get('action',''), l.get('policyname','')]
-            for i in range(8):
-                pdf.cell(cols[i], 6, str(row[i])[:20], 1)
-            pdf.ln()
-
-        response = make_response(pdf.output(dest='S').encode('latin-1', 'ignore'))
-        response.headers['Content-Type'] = 'application/pdf'
-        response.headers['Content-Disposition'] = f'attachment; filename=realtime_{int(time.time())}.pdf'
-        return response
+    try: total = conn.execute(f"SELECT count(*) FROM logs WHERE 1=1 {SQL_GLOBAL_FILTER}").fetchone()[0]
+    except: total = 0
     
-    return render_template('logs_realtime.html', logs=logs_filtrados, term=term,
-                           show_allowed=show_allowed, show_blocked=show_blocked, sys_info=get_sys_info())
+    pages = math.ceil(total / per_page)
+    offset = (page - 1) * per_page
+    
+    query = f"SELECT * FROM logs WHERE 1=1 {SQL_GLOBAL_FILTER} ORDER BY id DESC LIMIT ? OFFSET ?"
+    rows = conn.execute(query, (per_page, offset)).fetchall()
+    
+    conn.close()
+    return render_template('logs_realtime.html', logs=[format_log(r) for r in rows], page=page, total_pages=pages, total_records=total, per_page=per_page)
 
-@app.route('/logs-relatorio', methods=['GET', 'POST'])
+@app.route('/logs_relatorio')
 @login_required
 def logs_relatorio():
-    agora = datetime.now()
-    start = request.form.get('start_time', (agora - timedelta(hours=24)).strftime("%Y-%m-%dT%H:%M"))
-    end = request.form.get('end_time', agora.strftime("%Y-%m-%dT%H:%M"))
-    term = request.form.get('term', '').lower()
-    action_btn = request.form.get('action_btn', 'filter')
+    per_page = request.args.get('per_page', 50, type=int)
+    page = request.args.get('page', 1, type=int)
+    busca = request.args.get('busca', '')
+    dt_i = request.args.get('data_inicio')
+    dt_f = request.args.get('data_fim')
+    status = request.args.get('status', 'all')
     
-    if request.method == 'POST':
-        show_allowed = 'show_allowed' in request.form
-        show_blocked = 'show_blocked' in request.form
-    else:
-        show_allowed, show_blocked = True, True
+    query = f" FROM logs WHERE 1=1 {SQL_GLOBAL_FILTER} "
+    p = []
+    
+    if dt_i: query += " AND log_date >= ?"; p.append(dt_i.replace('T', ' ')+":00")
+    if dt_f: query += " AND log_date <= ?"; p.append(dt_f.replace('T', ' ')+":59")
+    if busca: 
+        query += " AND (src_name LIKE ? OR src_ip LIKE ? OR service LIKE ?)"
+        p.extend([f"%{busca}%", f"%{busca}%", f"%{busca}%"])
+    if status == 'allowed': query += " AND action IN ('accept','allow','permit')"
+    elif status == 'blocked': query += " AND action NOT IN ('accept','allow','permit')"
+    
+    conn = get_db()
+    total = conn.execute("SELECT count(*)" + query, p).fetchone()[0]
+    rows = conn.execute("SELECT *" + query + " ORDER BY log_date DESC LIMIT ? OFFSET ?", p + [per_page, (page-1)*per_page]).fetchall()
+    conn.close()
+    
+    return render_template('logs_relatorio.html', logs=[format_log(r) for r in rows], page=page, total_pages=math.ceil(total/per_page), total_records=total, busca=busca, dt_inicio=dt_i, dt_fim=dt_f, status=status, per_page=per_page)
 
-    logs_filtrados = []
-    if request.method == 'POST' or True: 
-        try:
-            dt_ini = datetime.strptime(start, "%Y-%m-%dT%H:%M")
-            dt_fim = datetime.strptime(end, "%Y-%m-%dT%H:%M")
-            all_logs = parse_fortigate_logs()
-            for l in all_logs:
-                ldt = get_log_datetime(l)
-                if not (dt_ini <= ldt <= dt_fim): continue
-                allowed = l.get('action') in ['accept', 'allow', 'permit']
-                if allowed and not show_allowed: continue
-                if not allowed and not show_blocked: continue
-                if term:
-                    content = f"{l.get('srcip')} {l.get('srcname')} {l.get('srcmac')} {l.get('dstip')} {l.get('service')} {l.get('policyname')}".lower()
-                    if term not in content: continue
-                logs_filtrados.append(l)
-        except: flash('Erro na data', 'warning')
-
-    if action_btn == 'csv':
-        si = io.StringIO()
-        cw = csv.writer(si, delimiter=';')
-        cw.writerow(['Data', 'Hora', 'Origem', 'IP Origem', 'Destino', 'Aplicação', 'Ação', 'Política'])
-        for l in logs_filtrados:
-            cw.writerow([l.get('date'), l.get('time'), l.get('srcname'), l.get('srcip'), 
-                         l.get('dstip'), l.get('service'), l.get('action'), l.get('policyname')])
-        output = make_response(si.getvalue())
-        output.headers["Content-Disposition"] = f"attachment; filename=relatorio_{int(time.time())}.csv"
-        output.headers["Content-type"] = "text/csv"
-        return output
-
-    if action_btn == 'pdf':
-        class PDF(FPDF):
-            def header(self):
-                self.set_font('Arial', 'B', 12)
-                self.cell(0, 10, 'Relatorio de Logs - FortiLog Monitor', 0, 1, 'C')
-                self.ln(5)
-            def footer(self):
-                self.set_y(-15)
-                self.set_font('Arial', 'I', 8)
-                self.cell(0, 10, f'Pagina {self.page_no()}', 0, 0, 'C')
-
-        pdf = PDF(orientation='L')
-        pdf.add_page()
-        pdf.set_font("Arial", size=8)
-        cols = [30, 25, 40, 30, 40, 25, 20, 40]
-        headers = ['Data/Hora', 'IP Origem', 'Nome Origem', 'MAC', 'Destino', 'App', 'Acao', 'Politica']
-        pdf.set_fill_color(200, 220, 255)
-        for i, h in enumerate(headers):
-            pdf.cell(cols[i], 7, h, 1, 0, 'C', True)
-        pdf.ln()
-        
-        for l in logs_filtrados:
-            dh = f"{l.get('date')} {l.get('time')}"
-            row = [dh, l.get('srcip',''), l.get('srcname',''), l.get('srcmac',''), 
-                   l.get('dstip',''), l.get('service',''), l.get('action',''), l.get('policyname','')]
-            for i in range(8):
-                pdf.cell(cols[i], 6, str(row[i])[:20], 1)
-            pdf.ln()
-
-        response = make_response(pdf.output(dest='S').encode('latin-1', 'ignore'))
-        response.headers['Content-Type'] = 'application/pdf'
-        response.headers['Content-Disposition'] = f'attachment; filename=relatorio_{int(time.time())}.pdf'
-        return response
-
-    return render_template('logs_relatorio.html', logs=logs_filtrados, start_time=start, end_time=end, 
-                           term=term, show_allowed=show_allowed, show_blocked=show_blocked, sys_info=get_sys_info())
+@app.route('/export_logs')
+@login_required
+def export_logs():
+    conn = get_db()
+    rows = conn.execute(f"SELECT * FROM logs WHERE 1=1 {SQL_GLOBAL_FILTER} ORDER BY log_date DESC LIMIT 50000").fetchall()
+    conn.close()
+    si = io.StringIO(); cw = csv.writer(si, delimiter=';')
+    cw.writerow(["Data", "Origem", "IP", "MAC", "Destino", "App", "Acao", "Politica"])
+    for r in rows:
+        d = format_log(r)
+        cw.writerow([d['log_date'], d['src_nome'], d['ip'], d['mac'], d['destino'], d['aplicacao'], d['status_cat'], d['politica_id']])
+    output = make_response(si.getvalue())
+    output.headers["Content-Disposition"] = "attachment; filename=logs_filtrados.csv"
+    output.headers["Content-type"] = "text/csv"
+    return output
 
 @app.route('/dispositivos', methods=['GET', 'POST'])
 @login_required
-def dispositivos():
-    devices = load_json(ENV_FILE_MACS)
+def dispositivos(): 
+    d = load_json('devices')
+    if request.method=='POST': 
+        act = request.form.get('action')
+        if act == 'add': d[request.form['mac'].strip().lower()] = request.form['nome'].strip()
+        elif act == 'delete': d.pop(request.form['mac'].strip().lower(), None)
+        save_json('devices', d); return redirect(url_for('dispositivos'))
+    grp = {}
+    for m, n in d.items():
+        k = (n or "Sem Nome").strip().upper()
+        if k not in grp: grp[k] = {'nome': n.strip(), 'macs': []}
+        grp[k]['macs'].append(m)
+    return render_template('dispositivos.html', grupos={v['nome']:sorted(v['macs']) for v in grp.values()})
+
+@app.route('/grupos', methods=['GET', 'POST'])
+@login_required
+def grupos():
+    g = load_json('groups')
     if request.method == 'POST':
         act = request.form.get('action')
-        mac = request.form.get('mac')
-        if act == 'delete' and mac in devices: del devices[mac]
-        else: devices[mac] = request.form.get('nome')
-        save_json(ENV_FILE_MACS, devices)
-    return render_template('dispositivos.html', devices=devices, sys_info=get_sys_info())
+        grp = request.form.get('grupo')
+        mem = request.form.get('membro')
+        if act == 'add_group' and grp: g[grp] = []
+        elif act == 'del_group': g.pop(grp, None)
+        elif act == 'add_member' and grp in g: g[grp].append(mem)
+        elif act == 'del_member' and grp in g and mem in g[grp]: g[grp].remove(mem)
+        save_json('groups', g); return redirect(url_for('grupos'))
+    return render_template('grupos.html', mapa=g)
 
 @app.route('/destinos', methods=['GET', 'POST'])
 @login_required
 def destinos():
-    redes = load_json(ENV_FILE_NETWORKS)
+    n = load_json('networks')
     if request.method == 'POST':
         act = request.form.get('action')
-        cidr = request.form.get('cidr')
-        if act == 'delete' and cidr in redes: del redes[cidr]
-        elif act == 'add': redes[cidr] = request.form.get('nome')
-        save_json(ENV_FILE_NETWORKS, redes)
-    
-    logs = parse_fortigate_logs()
-    count = {}
-    for l in logs:
-        dst = l.get('service', l.get('dstip'))
-        count[dst] = count.get(dst, 0) + 1
-    top = sorted(count.items(), key=lambda x:x[1], reverse=True)[:10]
-    return render_template('destinos.html', top_destinos=top, redes=redes, sys_info=get_sys_info())
-
-@app.route('/grupos')
-@login_required
-def grupos():
-    return render_template('grupos.html', mapa=load_json(ENV_FILE_GROUPS), sys_info=get_sys_info())
-
-@app.route('/alertas', methods=['GET', 'POST'])
-@login_required
-def alertas():
-    if request.method == 'POST': flash('Salvo!', 'success')
-    return render_template('alertas.html', config=load_json(ENV_FILE_ALERTS_CONFIG), sys_info=get_sys_info())
+        if act == 'add': n[request.form.get('ip').strip()] = request.form.get('nome').strip()
+        elif act == 'delete': n.pop(request.form.get('ip'), None)
+        save_json('networks', n); global NETWORK_CACHE; NETWORK_CACHE = n
+        return redirect(url_for('destinos'))
+    return render_template('destinos.html', redes=dict(sorted(n.items(), key=lambda i: i[1].lower())))
 
 @app.route('/usuarios', methods=['GET', 'POST'])
 @login_required
 def usuarios():
-    users = load_json(ENV_FILE_USERS)
+    u = load_json('users')
     if request.method == 'POST':
-        login = request.form.get('login')
-        users[login] = {"senha": request.form.get('senha'), "role": request.form.get('nivel'), 
-                        "nome": request.form.get('nome'), "ativo": True}
-        save_json(ENV_FILE_USERS, users)
-    return render_template('usuarios.html', users=users, sys_info=get_sys_info())
+        act = request.form.get('action')
+        usr = request.form.get('username')
+        if act == 'add' and usr: u[usr]={'senha':request.form['password'],'role':request.form.get('role','USER'),'criado_em':datetime.now().strftime('%d/%m/%Y')}
+        elif act == 'edit' and usr in u:
+            u[usr]['role'] = request.form.get('role')
+            if request.form.get('password'): u[usr]['senha'] = request.form['password']
+        elif act == 'delete': u.pop(usr, None)
+        save_json('users', u); return redirect(url_for('usuarios'))
+    return render_template('usuarios.html', users=u)
 
-@app.route('/usuarios/excluir/<login>', methods=['POST'])
+@app.route('/alertas')
 @login_required
-def excluir_usuario(login):
-    users = load_json(ENV_FILE_USERS)
-    if login in users and login != session.get('usuario'):
-        del users[login]
-        save_json(ENV_FILE_USERS, users)
-    return redirect(url_for('usuarios'))
+def alertas(): return render_template('alertas.html', config=load_json('alerts'))
+@app.route('/logs_view')
+def logs_view(): return redirect(url_for('logs_realtime'))
 
-@app.route('/api/stats')
-def api_stats(): return jsonify(get_sys_info())
+def system_monitor():
+    while True:
+        try:
+            CURRENT_STATS['cpu'] = psutil.cpu_percent(interval=1)
+            
+            # CÁLCULO DE RAM EM GB
+            mem = psutil.virtual_memory()
+            CURRENT_STATS['ram_percent'] = mem.percent
+            CURRENT_STATS['ram_used'] = round(mem.used / (1024 ** 3), 1) # Converte para GB
+            
+            # CÁLCULO DE DISCO
+            disk = psutil.disk_usage('/')
+            CURRENT_STATS['disk_percent'] = disk.percent
+            
+            if os.path.exists(DB_PATH): CURRENT_STATS['db_size'] = f"{os.path.getsize(DB_PATH)/(1024*1024):.1f} MB"
+            
+            # Rede (Opcional, mas já preparamos)
+            net = psutil.net_io_counters()
+            CURRENT_STATS['net_sent'] = net.bytes_sent
+            CURRENT_STATS['net_recv'] = net.bytes_recv
+            
+        except: pass
+        time.sleep(5)
+
+if not os.environ.get("WERKZEUG_RUN_MAIN"):
+    threading.Thread(target=system_monitor, daemon=True).start()
+    threading.Thread(target=realtime_worker, daemon=True).start()
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=False, use_reloader=False)

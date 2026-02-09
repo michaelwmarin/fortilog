@@ -1,78 +1,83 @@
-{% extends "base.html" %}
-
+{% extends 'base.html' %}
 {% block content %}
-<div class="container-fluid p-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="fw-bold text-dark mb-0">Grupos e Setores</h2>
-            <p class="text-muted mb-0">Análise de consumo de dados por departamento</p>
-        </div>
+<div class="row mb-4 align-items-center">
+    <div class="col">
+        <h2><i class="bi bi-collection"></i> Departamentos e Grupos</h2>
+        <p class="text-muted">Gerencie os setores importados do Fortigate (Cores).</p>
     </div>
-
-    <div class="row">
-        <div class="col-lg-8 mb-4">
-            <div class="card shadow-sm border-0 rounded-3">
-                <div class="card-header bg-white py-3 border-bottom">
-                    <h6 class="mb-0 fw-bold">Consumo de Banda por Grupo (MB)</h6>
-                </div>
-                <div class="card-body">
-                    <div style="height: 350px; width: 100%;">
-                        <canvas id="gruposChart"></canvas>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-lg-4">
-            <div class="card shadow-sm border-0 rounded-3">
-                <div class="card-header bg-white py-3 border-bottom">
-                    <h6 class="mb-0 fw-bold"><i class="bi bi-diagram-3 me-2"></i>Mapeamento Atual</h6>
-                </div>
-                <div class="card-body p-0">
-                    <div class="table-responsive" style="max-height: 400px;">
-                        <table class="table table-hover mb-0 small">
-                            <thead class="table-light">
-                                <tr>
-                                    <th class="ps-3">Dispositivo</th>
-                                    <th class="text-end pe-3">Grupo</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for user, group in mapa.items() %}
-                                <tr>
-                                    <td class="ps-3 fw-bold">{{ user }}</td>
-                                    <td class="text-end pe-3"><span class="badge bg-secondary">{{ group }}</span></td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <div class="col-auto">
+        <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNovoGrupo">
+            <i class="bi bi-plus-lg"></i> Novo Grupo
+        </button>
     </div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script>
-    const ctx = document.getElementById('gruposChart').getContext('2d');
-    new Chart(ctx, {
-        type: 'bar',
-        data: {
-            labels: {{ labels | safe }},
-            datasets: [{
-                label: 'Consumo (MB)',
-                data: {{ values | safe }},
-                backgroundColor: '#0d6efd',
-                borderRadius: 4
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: { legend: { display: false } },
-            scales: { y: { beginAtZero: true } }
-        }
-    });
-</script>
+{% if not mapa %}
+<div class="alert alert-warning">
+    <i class="bi bi-exclamation-triangle"></i> Nenhum grupo encontrado. 
+    <strong>Dica:</strong> Rode o script <code>import_forti.py</code> para importar as Cores do Fortigate.
+</div>
+{% endif %}
+
+<div class="row g-3">
+    {% for nome_grupo, membros in mapa.items() %}
+    <div class="col-md-6 col-lg-4">
+        <div class="card h-100 shadow-sm border-0">
+            <div class="card-header bg-dark text-white d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0 fs-6">{{ nome_grupo }}</h5>
+                <span class="badge bg-secondary">{{ membros|length }} membros</span>
+            </div>
+            <div class="card-body bg-light p-2" style="max-height: 250px; overflow-y: auto;">
+                {% if membros %}
+                <ul class="list-group list-group-flush small">
+                    {% for membro in membros %}
+                    <li class="list-group-item bg-transparent d-flex justify-content-between">
+                        {{ membro }}
+                        <form method="POST" style="display:inline" onsubmit="return confirm('Remover {{ membro }} deste grupo?');">
+                            <input type="hidden" name="action" value="del_member">
+                            <input type="hidden" name="grupo" value="{{ nome_grupo }}">
+                            <input type="hidden" name="membro" value="{{ membro }}">
+                            <button class="btn btn-link text-danger p-0 border-0"><i class="bi bi-x-circle"></i></button>
+                        </form>
+                    </li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="text-muted text-center small my-3">Grupo vazio.</p>
+                {% endif %}
+            </div>
+            <div class="card-footer bg-white">
+                <form method="POST" class="input-group input-group-sm">
+                    <input type="hidden" name="action" value="add_member">
+                    <input type="hidden" name="grupo" value="{{ nome_grupo }}">
+                    <input type="text" name="membro" class="form-control" placeholder="Add Nome do Usuário...">
+                    <button class="btn btn-outline-secondary"><i class="bi bi-plus"></i></button>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="modal fade" id="modalNovoGrupo" tabindex="-1">
+    <div class="modal-dialog">
+        <form method="POST">
+            <input type="hidden" name="action" value="add_group">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Criar Novo Grupo</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <label class="form-label">Nome do Grupo/Setor</label>
+                    <input type="text" name="grupo" class="form-control" placeholder="Ex: Financeiro" required>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-success">Criar</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
 {% endblock %}

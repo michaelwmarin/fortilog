@@ -1,123 +1,93 @@
-{% extends "base.html" %}
-
+{% extends 'base.html' %}
 {% block content %}
-<div class="container-fluid p-4">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="fw-bold text-dark mb-0">Relatório Histórico</h2>
-            <p class="text-muted mb-0">Pesquisa avançada em logs antigos</p>
-        </div>
-    </div>
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h2><i class="bi bi-journal-text"></i> Relatório Histórico</h2>
+    <a href="{{ url_for('export_logs') }}" class="btn btn-success btn-sm"><i class="bi bi-file-earmark-excel"></i> Exportar CSV</a>
+</div>
 
-    <div class="card shadow-sm border-0 rounded-3 mb-4">
-        <div class="card-body p-3">
-            <form method="POST" action="{{ url_for('logs_relatorio') }}">
-                <div class="row g-2 align-items-center">
-                    
-                    <div class="col-lg-3">
-                        <div class="input-group">
-                            <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
-                            <input type="text" name="term" class="form-control border-start-0 ps-0" 
-                                   placeholder="Buscar..." value="{{ term }}">
-                        </div>
-                    </div>
-
-                    <div class="col-lg-2">
-                        <input type="datetime-local" name="start_time" class="form-control form-control-sm text-muted" 
-                               value="{{ start_time }}" required>
-                    </div>
-                    <div class="col-lg-2">
-                        <input type="datetime-local" name="end_time" class="form-control form-control-sm text-muted" 
-                               value="{{ end_time }}" required>
-                    </div>
-
-                    <div class="col-lg-auto ms-lg-2">
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" name="show_allowed" id="chkAllow" value="1" {% if show_allowed %}checked{% endif %}>
-                            <label class="form-check-label fw-bold text-success small" for="chkAllow">Permitidos</label>
-                        </div>
-                        <div class="form-check form-check-inline">
-                            <input class="form-check-input" type="checkbox" name="show_blocked" id="chkBlock" value="1" {% if show_blocked %}checked{% endif %}>
-                            <label class="form-check-label fw-bold text-danger small" for="chkBlock">Bloqueados</label>
-                        </div>
-                    </div>
-
-                    <div class="col-lg-auto ms-auto d-flex gap-2">
-                        
-                        <a href="{{ url_for('logs_relatorio') }}" class="btn btn-outline-secondary fw-bold px-3" title="Limpar Filtros">
-                            <i class="bi bi-eraser me-1"></i>
-                        </a>
-
-                        <button type="submit" name="action_btn" value="filter" class="btn btn-primary fw-bold px-3">
-                            <i class="bi bi-funnel-fill me-1"></i> Filtrar
-                        </button>
-                        
-                        <button type="submit" name="action_btn" value="csv" class="btn btn-success fw-bold px-3" title="Baixar CSV">
-                            <i class="bi bi-file-earmark-spreadsheet me-1"></i> CSV
-                        </button>
-
-                        <button type="submit" name="action_btn" value="pdf" class="btn btn-danger fw-bold px-3" title="Baixar PDF">
-                            <i class="bi bi-file-earmark-pdf me-1"></i> PDF
-                        </button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
-
-    <div class="card shadow-sm border-0 rounded-3">
-        <div class="card-header bg-white py-3 border-bottom d-flex justify-content-between align-items-center">
-            <h6 class="mb-0 fw-bold"><i class="bi bi-table me-2"></i>Resultados</h6>
-            <span class="badge bg-light text-dark border">{{ logs|length }} registros</span>
-        </div>
-        
-        <div class="card-body p-0">
-            <div class="table-responsive">
-                <table class="table table-hover align-middle mb-0" style="font-size: 0.9rem;">
-                    <thead class="table-light">
-                        <tr>
-                            <th class="ps-4">Hora</th>
-                            <th>Origem</th>
-                            <th>Dispositivo</th>
-                            <th>Destino</th>
-                            <th>App</th>
-                            <th class="text-center">Ação</th>
-                            <th>Política</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for log in logs %}
-                        <tr>
-                            <td class="ps-4">
-                                <div class="fw-bold text-dark">{{ log.date }}</div>
-                                <div class="text-muted small">{{ log.time }}</div>
-                            </td>
-                            <td>
-                                <div class="fw-bold text-dark">{{ log.srcname or '-' }}</div>
-                                <div class="small text-muted">{{ log.srcip }}</div>
-                            </td>
-                            <td>
-                                <div class="text-dark">{{ log.osvendor or '-' }}</div>
-                                <div class="text-muted small">{{ log.osname }}</div>
-                            </td>
-                            <td><span class="font-monospace">{{ log.dstip }}</span></td>
-                            <td><span class="badge bg-light text-dark border">{{ log.service or log.app }}</span></td>
-                            <td class="text-center">
-                                {% if log.action in ['accept', 'allow', 'permit'] %}
-                                <i class="bi bi-check-circle-fill text-success"></i>
-                                {% else %}
-                                <i class="bi bi-x-circle-fill text-danger"></i>
-                                {% endif %}
-                            </td>
-                            <td><small class="text-muted">{{ log.policyname or log.policyid }}</small></td>
-                        </tr>
-                        {% else %}
-                        <tr><td colspan="7" class="text-center p-5 text-muted">Sem resultados.</td></tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+<div class="card mb-3 bg-light">
+    <div class="card-body py-2">
+        <form method="get" class="row g-2 align-items-center">
+            <div class="col-auto"><label class="small fw-bold">Buscar:</label><input type="text" name="busca" class="form-control form-control-sm" placeholder="Nome, App, IP..." value="{{ busca }}"></div>
+            <div class="col-auto"><label class="small fw-bold">De:</label><input type="datetime-local" name="data_inicio" class="form-control form-control-sm" value="{{ dt_inicio }}"></div>
+            <div class="col-auto"><label class="small fw-bold">Até:</label><input type="datetime-local" name="data_fim" class="form-control form-control-sm" value="{{ dt_fim }}"></div>
+            <div class="col-auto"><label class="small fw-bold">Status:</label>
+                <select name="status" class="form-select form-select-sm">
+                    <option value="all" {% if status == 'all' %}selected{% endif %}>Todos</option>
+                    <option value="allowed" {% if status == 'allowed' %}selected{% endif %}>Permitidos</option>
+                    <option value="blocked" {% if status == 'blocked' %}selected{% endif %}>Bloqueados</option>
+                </select>
             </div>
+            <div class="col-auto align-self-end">
+                <button type="submit" class="btn btn-primary btn-sm">Filtrar</button>
+                <a href="{{ url_for('logs_relatorio') }}" class="btn btn-outline-secondary btn-sm">Limpar</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table table-hover table-striped align-middle mb-0">
+                <thead class="table-dark">
+                    <tr>
+                        <th style="width: 140px;">Data/Time</th>
+                        <th>Fonte (Origem)</th>
+                        <th>Dispositivo</th>
+                        <th>Destino</th>
+                        <th>Aplicação</th>
+                        <th class="text-center">Resultado</th>
+                        <th class="text-center">Política</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for log in logs %}
+                    <tr>
+                        <td class="small text-nowrap">{{ log.date }} <br><span class="text-muted">{{ log.time }}</span></td>
+                        <td>
+                            <div class="fw-bold text-truncate" style="max-width: 200px;" title="{{ log.src_nome }}">{{ log.src_nome }}</div>
+                            <div class="d-flex flex-column small text-muted" style="font-size: 0.8rem;">
+                                <span><i class="bi bi-globe2 me-1"></i>{{ log.ip }}</span>
+                                <span><i class="bi bi-ethernet me-1"></i>{{ log.mac }}</span>
+                            </div>
+                        </td>
+                        <td><span class="badge bg-light text-dark border"><i class="{{ log.icon_cls }}"></i> {{ log.vendor }}</span></td>
+                        <td class="small">{{ log.destino }}</td>
+                        <td><span class="fw-bold text-primary">{{ log.aplicacao }}</span></td>
+                        <td class="text-center">
+                            {% if log.status_cat == 'Permitido' %}
+                                <span class="badge bg-success bg-opacity-10 text-success"><i class="bi bi-check-circle"></i> Permitido</span>
+                            {% else %}
+                                <span class="badge bg-danger bg-opacity-10 text-danger"><i class="bi bi-x-circle"></i> Bloqueado</span>
+                            {% endif %}
+                        </td>
+                        <td class="text-center">
+                            {% if log.politica_nome %}
+                            <div class="small fw-bold text-muted mb-1">{{ log.politica_nome }}</div>
+                            {% endif %}
+                            <span class="badge bg-secondary">ID: {{ log.politica_id }}</span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
         </div>
     </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mt-3">
+    <span class="text-muted small">Página {{ page }} de {{ total_pages }} ({{ total_records }} registros)</span>
+    <nav>
+        <ul class="pagination pagination-sm mb-0">
+            <li class="page-item {% if page == 1 %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for('logs_relatorio', page=page-1, per_page=per_page, busca=busca, data_inicio=dt_inicio, data_fim=dt_fim, status=status) }}">Anterior</a>
+            </li>
+            <li class="page-item active"><span class="page-link">{{ page }}</span></li>
+            <li class="page-item {% if page >= total_pages %}disabled{% endif %}">
+                <a class="page-link" href="{{ url_for('logs_relatorio', page=page+1, per_page=per_page, busca=busca, data_inicio=dt_inicio, data_fim=dt_fim, status=status) }}">Próximo</a>
+            </li>
+        </ul>
+    </nav>
 </div>
 {% endblock %}
