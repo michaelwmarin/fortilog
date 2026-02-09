@@ -1,119 +1,84 @@
-# 🛡️ FortiLog Monitor
+# 🛡️ FortiLog Monitor v1.4.4
 
-![Python](https://img.shields.io/badge/Python-3.10%2B-blue)
-![Flask](https://img.shields.io/badge/Flask-2.0%2B-green)
-![Status](https://img.shields.io/badge/Status-Stable-brightgreen)
-![License](https://img.shields.io/badge/License-MIT-yellow)
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue?style=for-the-badge&logo=python&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-2.0%2B-000000?style=for-the-badge&logo=flask&logoColor=white)
+![SQLite](https://img.shields.io/badge/SQLite-3.0-07405E?style=for-the-badge&logo=sqlite&logoColor=white)
+![Status](https://img.shields.io/badge/Status-Otimizado-brightgreen?style=for-the-badge)
 
-> **SIEM Leve & Dashboard de Monitoramento Híbrido (FortiGate + Linux Server).**
-
-O **FortiLog Monitor** é uma solução web desenvolvida em **Python (Flask)** para centralizar, visualizar e analisar logs de firewalls Fortigate e, simultaneamente, monitorar a saúde do servidor onde está hospedado.
-
-Com uma interface moderna, responsiva e identidade visual profissional, ele transforma logs brutos em inteligência acionável para equipes de TI e Segurança (SOC/NOC).
+> **SIEM Inteligente e Dashboard de Performance Híbrido.**
+> Uma solução leve para centralizar logs de Firewalls **FortiGate** e monitorar a integridade de servidores **Linux** em tempo real.
 
 ---
 
-## 📸 Visão Geral do Dashboard
-![Dashboard Principal](screenshots/dashboardp1.png)
-*(Visão unificada: Tráfego de Rede + Status de Hardware + Logs do Sistema Operacional)*
+## 🚀 O que há de novo na Versão Turbo?
+Após o processamento de grandes volumes de dados (testado com sucesso em ambientes de **104 GB**), o FortiLog foi otimizado para oferecer:
+
+* **⚡ Engine de Busca Otimizada:** Consultas ultra-rápidas que ignoram ruídos de rede (IPs ruidosos e câmeras) direto no banco de dados.
+* **📊 Colunas de Precisão:** Correção completa na captura de **Data/Hora**, **MAC Address** e **ID da Política**, garantindo auditoria sem campos vazios.
+* **🌡️ Telemetria de Hardware:** Monitoramento real de **CPU**, **Memória RAM (GB)** e **Ocupação de Disco** com indicadores visuais de consumo.
 
 ---
 
-## 🚀 Funcionalidades Principais
+## 🛠️ Funcionalidades Principais
 
-### 📊 1. Monitoramento Híbrido
-* **Tráfego de Rede:** Cards de total de conexões, permitidos e bloqueios (Firewall).
-* **Hardware Server:** Monitoramento em tempo real de **CPU**, **RAM** e **Disco** do servidor da aplicação.
-* **Logs do Sistema (Linux):** Leitura integrada do `/var/log/syslog` para auditoria de processos, CRON e serviços (Systemd).
+### 🔒 Segurança e Logs
+* **Análise em Tempo Real:** Feed contínuo de eventos do FortiGate com parser inteligente.
+* **Relatórios Históricos:** Filtros avançados por IP ou Nome Amigável com paginação de alta performance.
+* **Exportação de Dados:** Gere arquivos **CSV** prontos para auditoria com um clique.
 
-### ⚡ 2. Análise em Tempo Real & Histórico
-* **Feed ao Vivo:** Acompanhe o tráfego conforme ele acontece.
-* **Filtros Avançados:** Pesquisa por Texto, IP, Usuário ou Ação (Bloqueado/Permitido).
-* **Exportação Profissional:** Botões integrados para gerar relatórios em **PDF** e **CSV** instantaneamente.
-
-### 🎨 3. Visualização de Dados
-* **Gráficos Interativos:** Distribuição por Fabricantes (Polar Area) e Top Origens (Barras).
-* **Identidade Visual:** Favicon personalizado e layout limpo com Bootstrap 5.
-
-### ⚙️ 4. Gestão e Controle
-* **Gestão de Dispositivos:** Mapeamento de MAC Address para nomes amigáveis.
-* **Controle de Acesso:** Login seguro e níveis de permissão (Admin/Viewer).
-* **Configuração de Alertas:** Definição de triggers para eventos críticos.
+### 🖥️ Gestão de Ativos
+* **Nomes Amigáveis:** Vínculo de MAC Address a nomes reais (ex: *DESKTOP-C5DVVFN*).
+* **Mapeamento de Destinos:** Identificação de IPs externos e serviços conhecidos (ex: *Microsoft.Portal*).
+* **Controle de Acesso:** Sistema de autenticação seguro para níveis de permissão ADM/User.
 
 ---
 
-## 🖼️ Galeria de Telas
+## 📸 Galeria de Telas
 
-| Logs em Tempo Real (Com Exportação) | Relatórios Históricos |
+| Dashboard Limpo & Rápido | Auditoria de Logs (Fix Data/MAC/ID) |
 |:---:|:---:|
-| ![Logs Realtime](screenshots/logs.png) | ![Relatórios](screenshots/user.png) |
-
-| Gestão de Dispositivos | Monitoramento de Sistema |
-|:---:|:---:|
-| ![Dispositivos](screenshots/mac.png) | ![Syslog](screenshots/alertas.png) |
+| ![Dash](dashboardp1.png) | ![Logs](logs.png) |
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## ⚙️ Instalação e Configuração
 
-* **Backend:** Python 3, Flask.
-* **Frontend:** HTML5, CSS3, Bootstrap 5, Jinja2.
-* **Dados & Gráficos:** Chart.js, Pandas (lógica interna).
-* **Infraestrutura:** `psutil` (Hardware), `fpdf` (Relatórios PDF).
-* **Automação:** Scripts de inicialização automática de JSONs.
+O FortiLog foi desenhado para rodar no diretório `/opt/fortilog`.
+
+1.  **Estrutura de Pastas:**
+    ```bash
+    /opt/fortilog/
+    ├── data/          # logs.db e configurações JSON
+    ├── templates/     # Interface HTML (Jinja2)
+    ├── static/        # CSS, Ícones e Imagens
+    └── app.py         # Motor Principal (Flask)
+    ```
+
+2.  **Instalação das Dependências:**
+    ```bash
+    pip install flask psutil python-dotenv
+    ```
+
+3.  **Execução em Segundo Plano (Produção):**
+    ```bash
+    fuser -k 5000/tcp
+    nohup python3 app.py > logs_site_final.txt 2>&1 &
+    ```
 
 ---
 
-## ⚙️ Instalação e Execução (Linux/WSL)
+## 🧹 Manutenção e Boas Práticas
+Para manter a agilidade do sistema, o FortiLog v1.4.4 suporta rotação de dados. Em bancos de dados acima de **100 GB**, recomendamos o reset periódico ou backup das configurações (`.json`) seguido de um reset do banco para manter a fluidez do SQLite.
 
-1. **Clone o repositório:**
    ```bash
-   git clone [https://github.com/michaelwmarin/fortilog.git](https://github.com/michaelwmarin/fortilog.git)
-   cd fortilog
+   # Backup Rápido de Configurações
+   tar -czvf backup_fortilog_configs_$(date +%F).tar.gz /opt/fortilog/data/*.json /opt/fortilog/app.py
+   ```
 
-```
+## 📄 Licença e Créditos
 
-2. **Crie o Ambiente Virtual (Recomendado):**
-```bash
-python3 -m venv venv
-source venv/bin/activate
-
-```
-
-
-3. **Instale as dependências:**
-```bash
-pip install flask psutil python-dotenv fpdf
-
-```
-
-
-4. **Configuração (.env):**
-Crie um arquivo `.env` na raiz:
-```ini
-SECRET_KEY=sua_chave_secreta
-LOG_PATH=/opt/fortilog/logs/fortigate.log
-# O sistema criará os JSONs de dados automaticamente na primeira execução
-
-```
-
-
-5. **Execute a aplicação:**
-```bash
-python3 app.py
-
-```
-
-
-6. **Acesse:**
-Abra o navegador em `http://localhost:5000`
-
----
-
-## 📄 Licença
-
-Este projeto está sob a licença MIT. Sinta-se livre para contribuir!
+Este projeto está sob a licença MIT.
 
 <p align="center">
-Desenvolvido com 💙 por <strong>Michael Marin</strong>
+<strong>Desenvolvido com foco em performance e segurança por Michael Marin 💙</strong>
 </p>
