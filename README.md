@@ -37,7 +37,7 @@ Após o processamento de grandes volumes de dados (testado com sucesso em ambien
 
 | Dashboard Limpo & Rápido | Auditoria de Logs (Fix Data/MAC/ID) |
 |:---:|:---:|
-| ![Dash](dashboardp1.png) | ![Logs](logs.png) |
+| ![Dash](/screenshots/dashboardp1.png) | ![Logs](/screenshots/logs.png) |
 
 ---
 
@@ -80,5 +80,5 @@ Para manter a agilidade do sistema, o FortiLog v1.4.4 suporta rotação de dados
 Este projeto está sob a licença MIT.
 
 <p align="center">
-<strong>Desenvolvido com foco em performance e segurança por Michael Marin 💙</strong>
+<strong>Desenvolvido com foco em performance e segurança por Michael Marin</strong>
 </p>
